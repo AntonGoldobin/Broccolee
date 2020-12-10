@@ -84,7 +84,7 @@ function startBot() {
           return true;
         }
         ctx.telegram.sendPhoto(testChannelId, post.data.url);
-      }, 10 * 1000 * i);
+      }, 5 * 60 * 1000 * i);
     });
   };
 }
