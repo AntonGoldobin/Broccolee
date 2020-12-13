@@ -1,45 +1,27 @@
 const Telegraf = require("telegraf");
 const token = "932862565:AAGvB5FMFlC4O2oVS5JajXmA4-GtPytpto0";
-const axios = require("axios");
 const schedule = require("node-schedule");
+const snoowrap = require("snoowrap");
+const { get } = require("lodash");
 
 const testChannelId = "@broccoleeBoobs";
 
-const channels = [
-  "Ahegao_IRL",
-  "AhegaoBabes",
-  "AhegaoGirls",
-  "Ahegaos",
-  "BlowJob",
-  "blowjobsandwich",
-  "cosplayonoff",
-  "cumsluts",
-  "freeuse",
-  "GirlsFinishingTheJob",
-  "gonewild",
-  "GWCouples",
-  "MVgirls",
-  "NekoIRL",
-  "nsfw_gifs",
-  "nsfwcosplay",
-  "NSFWCostumes",
-  "pelfie",
-  "PurpleBitchVIP",
-  "pussyrating",
-  "theBelfie",
-  "Threesome",
-  "TinderNSWF",
-  "tittyfuck",
-];
+const r = new snoowrap({
+  userAgent:
+    "Hello, I need to create this app for my nodejs server for posting images from reddit to my telegram channel",
+  clientId: "nIgMmlzNDDlU9Q",
+  clientSecret: "5uysAkU3BwhLRIPyofjEk8R-u2QgZQ",
+  refreshToken: "572763428190-oyG2IPgb1oLPoPlLoenFEFsWwjXUPQ",
+});
 
 function startBot() {
-
   let job = null;
   const testBot = new Telegraf(token);
   testBot.command("start", (ctx) => {
     ctx.reply("Очередь запущена!");
     let startTime = new Date(Date.now() + 5000);
-    job = schedule.scheduleJob({start: startTime}, function(){
+    getRedditPosts(ctx);
+    job = schedule.scheduleJob({ start: startTime, rule: "0 0 */12 * * *" }, function(){
       getRedditPosts(ctx);
     });
   });
@@ -55,36 +37,22 @@ function startBot() {
   testBot.launch();
 
   const getRedditPosts = (ctx) => {
-    let channelsData = [];
-    
-    channels.map((channel, i) => {
-      axios
-        .get(`https://reddit.com/r/${channel}/top.json?limit=100`)
-        .then((res) => {
-          // data recieved from Reddit
-          setTimeout(() => {
-            channelsData.push(...res.data.data.children);
-
-            if (i + 1 === channels.length) {
-              const sortedChannelsData = channelsData.sort((a, b) => b.data.ups - a.data.ups);
-              sendPostsToChannel(sortedChannelsData, ctx);
-            }
-          }, 1000 * i);
-        })
-        // if there's any error in request
-        .catch((err) => console.log(err));
-    });
+    r.getHot({ time: "day", limit: 30 }).then((hotPosts) => sendPostsToChannel(hotPosts, ctx));
   };
 
-  const sendPostsToChannel = async (posts, ctx) => {
+  const sendPostsToChannel = (posts, ctx) => {
+    console.log(posts.length);
     posts.some((post, i) => {
-
       setTimeout(() => {
-        if(!job){
-          return true;
+        // if (!job) {
+        //   return true;
+        // }
+        if (post.url.includes("redgifs") || post.url.includes(".gifv")) {
+          ctx.telegram.sendAnimation(testChannelId, post.preview.reddit_video_preview.fallback_url,  { caption: `${post.title} \n [post URL](https://www.reddit.com/${post.permalink})` , parse_mode: 'MarkdownV2' });
+        } else {
+          ctx.telegram.sendPhoto(testChannelId, post.url,  { caption: `${post.title} \n [post URL](https://www.reddit.com/${post.permalink})` , parse_mode: 'MarkdownV2' });
         }
-        ctx.telegram.sendPhoto(testChannelId, post.data.url);
-      }, 5 * 60 * 1000 * i);
+      }, 10 * 60 * 1000 * i);
     });
   };
 }
