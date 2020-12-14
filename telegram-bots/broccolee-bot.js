@@ -8,24 +8,6 @@ dotenv.config();
 const testChannelId = "@broccoleeBoobs";
 const token = process.env.BROCCOLEE_BOT_TOKEN;
 
-const getCurrentTime = () => {
-  var currentdate = new Date();
-  return (
-    "Last Sync: " +
-    currentdate.getDate() +
-    "/" +
-    (currentdate.getMonth() + 1) +
-    "/" +
-    currentdate.getFullYear() +
-    " @ " +
-    currentdate.getHours() +
-    ":" +
-    currentdate.getMinutes() +
-    ":" +
-    currentdate.getSeconds()
-  );
-};
-
 const r = new snoowrap({
   userAgent:
     "Hello, I need to create this app for my nodejs server for posting images from reddit to my telegram channel",
@@ -40,8 +22,11 @@ function startBot() {
   testBot.command("start", (ctx) => {
     ctx.reply("Очередь запущена!");
     let startTime = new Date(Date.now() + 5000);
+
+    console.log("The schedule was restarted: " + getCurrentTime());
+
     job = schedule.scheduleJob({ start: startTime, rule: "0 0 */9 * * *" }, function() {
-      console.log("Schedule is started: " + getCurrentTime());
+      console.log("The schedule is started: " + getCurrentTime());
 
       getRedditPosts(ctx);
     });
@@ -84,6 +69,24 @@ function startBot() {
         }
       }, 10 * 60 * 1000 * i);
     });
+  };
+
+  const getCurrentTime = () => {
+    var currentdate = new Date();
+    return (
+      "Last Sync: " +
+      currentdate.getDate() +
+      "/" +
+      (currentdate.getMonth() + 1) +
+      "/" +
+      currentdate.getFullYear() +
+      " @ " +
+      currentdate.getHours() +
+      ":" +
+      currentdate.getMinutes() +
+      ":" +
+      currentdate.getSeconds()
+    );
   };
 }
 
