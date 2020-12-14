@@ -46,9 +46,9 @@ function startBot() {
         //   return true;
         // }
         if (post.url.includes("redgifs") || post.url.includes(".gifv")) {
-          ctx.telegram.sendAnimation(testChannelId, post.preview.reddit_video_preview.fallback_url,  { caption: `${post.title} \n [post URL](https://www.reddit.com/${post.permalink})` , parse_mode: 'MarkdownV2' });
+          ctx.telegram.sendAnimation(testChannelId, post.preview.reddit_video_preview.fallback_url,  { caption: `${post.title} \n [link](https://www.reddit.com/${post.permalink})` , parse_mode: 'MarkdownV2' });
         } else {
-          ctx.telegram.sendPhoto(testChannelId, post.url,  { caption: `${post.title} \n [post URL](https://www.reddit.com/${post.permalink})` , parse_mode: 'MarkdownV2' });
+          ctx.telegram.sendPhoto(testChannelId, post.url,  { caption: `${post.title} \n [link](https://www.reddit.com/${post.permalink})` , parse_mode: 'MarkdownV2' });
         }
       }, 10 * 60 * 1000 * i);
     });
