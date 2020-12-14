@@ -1,16 +1,19 @@
 const Telegraf = require("telegraf");
-const token = "932862565:AAGvB5FMFlC4O2oVS5JajXmA4-GtPytpto0";
 const schedule = require("node-schedule");
 const snoowrap = require("snoowrap");
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 const testChannelId = "@broccoleeBoobs";
+const token = process.env.BROCCOLEE_BOT_TOKEN;
 
 const r = new snoowrap({
   userAgent:
     "Hello, I need to create this app for my nodejs server for posting images from reddit to my telegram channel",
-  clientId: "nIgMmlzNDDlU9Q",
-  clientSecret: "5uysAkU3BwhLRIPyofjEk8R-u2QgZQ",
-  refreshToken: "572763428190-oyG2IPgb1oLPoPlLoenFEFsWwjXUPQ",
+  clientId: process.env.BROCCOLEE_SNOOWRAP_CLIENT_ID,
+  clientSecret: process.env.BROCCOLEE_SNOOWRAP_CLIENT_SECRET,
+  refreshToken: process.env.BROCCOLEE_SNOOWRAP_REFRESH_TOKEN,
 });
 
 function startBot() {
@@ -35,7 +38,7 @@ function startBot() {
   testBot.launch();
 
   const getRedditPosts = (ctx) => {
-    r.getHot({ time: "day", limit: 30 }).then((hotPosts) => sendPostsToChannel(hotPosts, ctx));
+    r.getHot({ time: "day", limit: 100 }).then((hotPosts) => sendPostsToChannel(hotPosts, ctx));
   };
 
   const sendPostsToChannel = (posts, ctx) => {
