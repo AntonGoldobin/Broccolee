@@ -22,7 +22,7 @@ function startBot() {
   testBot.command("start", (ctx) => {
     ctx.reply("Очередь запущена!");
     let startTime = new Date(Date.now() + 5000);
-    job = schedule.scheduleJob({ start: startTime, rule: "0 0 */12 * * *" }, function(){
+    job = schedule.scheduleJob({ start: startTime, rule: "0 0 */9 * * *" }, function(){
       getRedditPosts(ctx);
     });
   });
