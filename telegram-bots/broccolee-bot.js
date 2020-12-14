@@ -25,7 +25,7 @@ function startBot() {
 
     console.log("The schedule was restarted: " + getCurrentTime());
 
-    job = schedule.scheduleJob({ start: startTime, rule: "0 0 */9 * * *" }, function() {
+    job = schedule.scheduleJob({ start: startTime, rule: "0 0 */12 * * *" }, function() {
       console.log("The schedule is started: " + getCurrentTime());
 
       getRedditPosts(ctx);
