@@ -26,8 +26,6 @@ function startBot() {
     console.log("The schedule was restarted: " + getCurrentTime());
 
     job = schedule.scheduleJob({ start: startTime, rule: "0 0 */12 * * *" }, function() {
-      console.log("The schedule is started: " + getCurrentTime());
-
       getRedditPosts(ctx);
     });
   });
@@ -43,6 +41,8 @@ function startBot() {
   testBot.launch();
 
   const getRedditPosts = (ctx) => {
+    console.log("The schedule is started: " + getCurrentTime());
+
     r
       .getHot({ time: "day", limit: 100 })
       .then((hotPosts) => sendPostsToChannel(hotPosts, ctx))
