@@ -2,7 +2,6 @@ const Telegraf = require("telegraf");
 const token = "932862565:AAGvB5FMFlC4O2oVS5JajXmA4-GtPytpto0";
 const schedule = require("node-schedule");
 const snoowrap = require("snoowrap");
-const { get } = require("lodash");
 
 const testChannelId = "@broccoleeBoobs";
 
@@ -20,7 +19,6 @@ function startBot() {
   testBot.command("start", (ctx) => {
     ctx.reply("Очередь запущена!");
     let startTime = new Date(Date.now() + 5000);
-    getRedditPosts(ctx);
     job = schedule.scheduleJob({ start: startTime, rule: "0 0 */12 * * *" }, function(){
       getRedditPosts(ctx);
     });
