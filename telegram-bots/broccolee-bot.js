@@ -29,6 +29,7 @@ function startBot() {
     ctx.reply("Очередь запущена!");
 
     console.log("The schedule will be started soon: " + getCurrentTime());
+    getRedditPosts(ctx);
 
     job = cron.schedule(
       jobReplyConfig,
