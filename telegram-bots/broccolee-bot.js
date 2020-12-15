@@ -1,12 +1,12 @@
 const Telegraf = require("telegraf");
-const schedule = require("node-schedule");
 var cron = require("node-cron");
 const snoowrap = require("snoowrap");
 const dotenv = require("dotenv");
+const logger = require("node-color-log");
 
 dotenv.config();
 
-const testChannelId = "@broccoleeBoobs";
+const testChannelId = "-1001243891289";
 const token = process.env.BROCCOLEE_BOT_TOKEN;
 
 const postingDelayMin = 10;
@@ -23,28 +23,26 @@ const r = new snoowrap({
 let job = null;
 
 function startBot() {
-
   const testBot = new Telegraf(token);
   testBot.command("start", (ctx) => {
     ctx.reply("Очередь запущена!");
 
-    job = cron.schedule(
-      jobReplyConfig,
-      () => {
-        console.log("The schedule was started: " + getCurrentTime());
-        getRedditPosts(ctx);
-      }
-    );
+    job = null;
+
+    job = cron.schedule(jobReplyConfig, () => {
+      successfulConsoleLog("The schedule was started: " + getCurrentTime());
+      getRedditPosts(ctx);
+    });
     job.start();
 
-    console.log("The schedule will be started soon: " + getCurrentTime());
+    successfulConsoleLog("The schedule will be started soon: " + getCurrentTime());
     getRedditPosts(ctx);
   });
 
   testBot.command("stop", (ctx) => {
     ctx.reply("Остановлено!");
     if (job) {
-      console.log("The schedule was stoped: " + getCurrentTime());
+      successfulConsoleLog("The schedule was stoped: " + getCurrentTime());
       job.destroy();
       job = null;
     }
@@ -54,7 +52,10 @@ function startBot() {
 }
 
 const getRedditPosts = (ctx) => {
-  r.getHot({ time: "day", limit: 100 }).then((hotPosts) => sendPostsToChannel(hotPosts, ctx));
+  r
+    .getHot({ time: "day", limit: 100 })
+    .then((hotPosts) => sendPostsToChannel(hotPosts, ctx))
+    .catch((err) => errorConsoleLog("Broccolee error: " + err));
 };
 
 const sendPostsToChannel = (posts, ctx) => {
@@ -96,6 +97,14 @@ const getCurrentTime = () => {
     ":" +
     currentdate.getSeconds()
   );
+};
+
+const successfulConsoleLog = (text) => {
+  logger.color("green").bgColor("black").log(text);
+};
+
+const errorConsoleLog = (text) => {
+  logger.color("red").bgColor("black").log(text);
 };
 
 module.exports.startBot = startBot;
