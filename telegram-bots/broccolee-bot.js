@@ -28,9 +28,6 @@ function startBot() {
   testBot.command("start", (ctx) => {
     ctx.reply("Очередь запущена!");
 
-    console.log("The schedule will be started soon: " + getCurrentTime());
-    getRedditPosts(ctx);
-
     job = cron.schedule(
       jobReplyConfig,
       () => {
@@ -39,6 +36,9 @@ function startBot() {
       }
     );
     job.start();
+
+    console.log("The schedule will be started soon: " + getCurrentTime());
+    getRedditPosts(ctx);
   });
 
   testBot.command("stop", (ctx) => {
