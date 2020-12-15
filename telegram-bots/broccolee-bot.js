@@ -10,7 +10,7 @@ const testChannelId = "@broccoleeBoobs";
 const token = process.env.BROCCOLEE_BOT_TOKEN;
 
 const postingDelayMin = 10;
-const jobReplyConfig = "* */12 * * *";
+const jobReplyConfig = "0 0 */12 * * *";
 
 const r = new snoowrap({
   userAgent:
