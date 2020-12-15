@@ -42,7 +42,7 @@ function startBot() {
   testBot.command("stop", (ctx) => {
     ctx.reply("Остановлено!");
     if (job) {
-      successfulConsoleLog("The schedule was stoped: " + getCurrentTime());
+      warnConsoleLog("The schedule was stoped: " + getCurrentTime());
       job.destroy();
       job = null;
     }
@@ -100,11 +100,16 @@ const getCurrentTime = () => {
 };
 
 const successfulConsoleLog = (text) => {
-  logger.color("green").bgColor("black").log(text);
+  logger.bgColor("black").info(text);
 };
 
+const warnConsoleLog = (text) => {
+  logger.bgColor("black").warn(text);
+};
+
+
 const errorConsoleLog = (text) => {
-  logger.color("red").bgColor("black").log(text);
+  logger.bgColor("black").error(text);
 };
 
 module.exports.startBot = startBot;
