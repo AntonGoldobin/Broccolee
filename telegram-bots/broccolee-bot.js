@@ -6,7 +6,7 @@ const logger = require("node-color-log");
 
 dotenv.config();
 
-const testChannelId = "-1001243891289";
+const testChannelId = process.env.BROCCOLEE_TG_CHANNEL;
 const token = process.env.BROCCOLEE_BOT_TOKEN;
 
 const postingDelayMin = 10;
@@ -23,32 +23,40 @@ const r = new snoowrap({
 let job = null;
 
 function startBot() {
-  const testBot = new Telegraf(token);
-  testBot.command("start", (ctx) => {
-    ctx.reply("Очередь запущена!");
+  const broccoleeBot = new Telegraf(token);
 
-    job = null;
+  startPosting(broccoleeBot);
 
-    job = cron.schedule(jobReplyConfig, () => {
-      successfulConsoleLog("The schedule was started: " + getCurrentTime());
-      getRedditPosts(ctx);
-    });
-    job.start();
+  broccoleeBot.command("start", (ctx) => {
+    ctx.reply(`Очередь будет запущена через ${postingDelayMin + 1} минут!`);
 
-    successfulConsoleLog("The schedule will be started soon: " + getCurrentTime());
+    destroyJobs();
+    setTimeout(() => {
+      startPosting(ctx);
+    }, (postingDelayMin + 1) * 60 * 1000);
+  });
+
+  broccoleeBot.command("stop", (ctx) => {
+    ctx.reply("Остановлено!");
+    destroyJobs();
+  });
+
+  broccoleeBot.launch();
+}
+
+const startPosting = (ctx) => {
+  destroyJobs();
+
+  job = cron.schedule(jobReplyConfig, () => {
+    successfulConsoleLog("The schedule was started: " + getCurrentTime());
+    ctx.telegram.sendMessage(-1001473727416, "The posting schedule has been started");
     getRedditPosts(ctx);
   });
+  job.start();
 
-  testBot.command("stop", (ctx) => {
-    ctx.reply("Остановлено!");
-    if (job) {
-      warnConsoleLog("The schedule was stoped: " + getCurrentTime());
-      job.destroy();
-      job = null;
-    }
-  });
-
-  testBot.launch();
+  ctx.telegram.sendMessage(-1001473727416, "!!! The posting has been started !!!");
+  successfulConsoleLog("The schedule will be started soon: " + getCurrentTime());
+  getRedditPosts(ctx);
 }
 
 const getRedditPosts = (ctx) => {
@@ -103,13 +111,15 @@ const successfulConsoleLog = (text) => {
   logger.bgColor("black").info(text);
 };
 
-const warnConsoleLog = (text) => {
-  logger.bgColor("black").warn(text);
-};
-
-
 const errorConsoleLog = (text) => {
   logger.bgColor("black").error(text);
 };
+
+const destroyJobs = () => {
+  if (job) {
+    job.destroy();
+    job = null;
+  }
+}
 
 module.exports.startBot = startBot;
