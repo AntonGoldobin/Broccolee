@@ -9,8 +9,9 @@ dotenv.config();
 const testChannelId = process.env.BROCCOLEE_TG_CHANNEL;
 const token = process.env.BROCCOLEE_BOT_TOKEN;
 
-const postingDelayMin = 10;
-const jobReplyConfig = "0 0 */12 * * *";
+const postingDelayMin = 14.4;
+const jobReplyConfig = "* * */24 * * *";
+const postLimit = 100;
 
 const r = new snoowrap({
   userAgent:
@@ -61,7 +62,7 @@ const startPosting = (ctx) => {
 
 const getRedditPosts = (ctx) => {
   r
-    .getHot({ time: "day", limit: 100 })
+    .getHot({ time: "day", limit: postLimit })
     .then((hotPosts) => sendPostsToChannel(hotPosts, ctx))
     .catch((err) => errorConsoleLog("Broccolee error: " + err));
 };
