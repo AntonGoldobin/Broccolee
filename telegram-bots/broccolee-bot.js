@@ -10,7 +10,7 @@ const testChannelId = process.env.BROCCOLEE_TG_CHANNEL;
 const token = process.env.BROCCOLEE_BOT_TOKEN;
 
 const postingDelayMin = 14.4;
-const jobReplyConfig = "* * */24 * * *";
+const jobReplyConfig = "0 0 */24 * * *";
 const postLimit = 100;
 
 const r = new snoowrap({
