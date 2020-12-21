@@ -9,8 +9,9 @@ dotenv.config();
 const testChannelId = process.env.BROCCOLEE_TG_CHANNEL;
 const token = process.env.BROCCOLEE_BOT_TOKEN;
 
-const postingDelayMin = 14.4;
-const jobReplyConfig = () => { return `0 ${new Date().getHours()} * * *` };
+const postingDelayMin = 15;
+const dailyJobReplyConfig = () => { return `0 ${new Date().getHours()} * * *` };
+const postingJobConfig = () => { return `*/${postingDelayMin} * * * *` };
 const postLimit = 100;
 
 
@@ -25,12 +26,13 @@ const r = new snoowrap({
   refreshToken: process.env.BROCCOLEE_SNOOWRAP_REFRESH_TOKEN,
 });
 
-let job = null;
+let dailyJob = null;
+let postingJob = null;
 
 function startBot() {
   const broccoleeBot = new Telegraf(token);
 
-  startPosting(broccoleeBot, "best");
+  startPosting(broccoleeBot, "hot");
 
   broccoleeBot.command("best", (ctx) => {
     ctx.reply(`Очередь будет запущена через ${postingDelayMin + 1} минут!`);
@@ -50,8 +52,18 @@ function startBot() {
     }, (postingDelayMin + 1) * 60 * 1000);
   });
 
-  broccoleeBot.command("stop", (ctx) => {
+  broccoleeBot.command("pause", (ctx) => {
     ctx.reply("Остановлено!");
+    postingJob.stop();
+  });
+
+  broccoleeBot.command("start", (ctx) => {
+    ctx.reply("Продолжаем!");
+    postingJob.start();
+  });
+  
+  broccoleeBot.command("destroy", (ctx) => {
+    ctx.reply("Уничтожено!");
     destroyJobs();
   });
 
@@ -61,14 +73,14 @@ function startBot() {
 const startPosting = (ctx, type) => {
   destroyJobs();
 
-  job = cron.schedule(jobReplyConfig(), () => {
+  dailyJob = cron.schedule(dailyJobReplyConfig(), () => {
     successfulConsoleLog("The schedule was started AGAIN: " + getCurrentTime());
     ctx.telegram.sendMessage(-1001473727416, "The posting schedule has been started AGAIN");
     getRedditPosts(ctx, type);
   }, {
     scheduled: true
   });
-  job.start();
+  dailyJob.start();
 
   ctx.telegram.sendMessage(-1001473727416, "!!! The posting has been started !!!");
   successfulConsoleLog("The schedule will be started soon: " + getCurrentTime());
@@ -91,12 +103,12 @@ const getRedditPosts = (ctx, type) => {
 };
 
 const sendPostsToChannel = (posts, ctx) => {
-  posts.some((post, i) => {
-    setTimeout(() => {
-      if (!job) {
-        return true;
-      }
+    let postIndex = 0
 
+    postingJob = cron.schedule(postingJobConfig(), () => {
+      successfulConsoleLog("new post from schedule: " + getCurrentTime());
+
+      const post = posts[postIndex];
       const text = `${post.title} \n[link](https://www.reddit.com/${post.permalink})`;
 
       if (post.url.includes("redgifs") || post.url.includes(".gifv")) {
@@ -110,8 +122,17 @@ const sendPostsToChannel = (posts, ctx) => {
           parse_mode: "Markdown",
         });
       }
-    }, postingDelayMin * 60 * 1000 * i);
-  });
+
+      if (!posts || postIndex + 1 === posts.length) {
+        postingJob.destroy();
+        postingJob = null;
+      }
+
+      postIndex++;
+    }, {
+      scheduled: true
+    });
+    dailyJob.start();
 };
 
 const getCurrentTime = () => {
@@ -140,9 +161,13 @@ const errorConsoleLog = (text) => {
 };
 
 const destroyJobs = () => {
-  if (job) {
-    job.destroy();
-    job = null;
+  if (dailyJob) {
+    dailyJob.destroy();
+    dailyJob = null;
+  }
+  if (postingJob) {
+    postingJob.destroy();
+    postingJob = null;
   }
 }
 
