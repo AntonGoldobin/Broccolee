@@ -10,8 +10,10 @@ const testChannelId = process.env.BROCCOLEE_TG_CHANNEL;
 const token = process.env.BROCCOLEE_BOT_TOKEN;
 
 const postingDelayMin = 14.4;
-const jobReplyConfig = "0 0 */24 * * *";
+const jobReplyConfig = `0 ${new Date().getHours()} * * *`;
 const postLimit = 100;
+
+console.log(new Date().getHours());
 
 const r = new snoowrap({
   userAgent:
@@ -26,14 +28,23 @@ let job = null;
 function startBot() {
   const broccoleeBot = new Telegraf(token);
 
-  startPosting(broccoleeBot);
+  startPosting(broccoleeBot, "best");
 
-  broccoleeBot.command("start", (ctx) => {
+  broccoleeBot.command("best", (ctx) => {
     ctx.reply(`Очередь будет запущена через ${postingDelayMin + 1} минут!`);
 
     destroyJobs();
     setTimeout(() => {
-      startPosting(ctx);
+      startPosting(ctx, "best");
+    }, (postingDelayMin + 1) * 60 * 1000);
+  });
+
+  broccoleeBot.command("hot", (ctx) => {
+    ctx.reply(`Очередь будет запущена через ${postingDelayMin + 1} минут!`);
+
+    destroyJobs();
+    setTimeout(() => {
+      startPosting(ctx, "hot");
     }, (postingDelayMin + 1) * 60 * 1000);
   });
 
@@ -45,26 +56,36 @@ function startBot() {
   broccoleeBot.launch();
 }
 
-const startPosting = (ctx) => {
+const startPosting = (ctx, type) => {
   destroyJobs();
 
   job = cron.schedule(jobReplyConfig, () => {
-    successfulConsoleLog("The schedule was started: " + getCurrentTime());
-    ctx.telegram.sendMessage(-1001473727416, "The posting schedule has been started");
-    getRedditPosts(ctx);
+    successfulConsoleLog("The schedule was started AGAIN: " + getCurrentTime());
+    ctx.telegram.sendMessage(-1001473727416, "The posting schedule has been started AGAIN");
+    getRedditPosts(ctx, type);
+  }, {
+    scheduled: true
   });
   job.start();
 
   ctx.telegram.sendMessage(-1001473727416, "!!! The posting has been started !!!");
   successfulConsoleLog("The schedule will be started soon: " + getCurrentTime());
-  getRedditPosts(ctx);
+  getRedditPosts(ctx, type);
 }
 
-const getRedditPosts = (ctx) => {
-  r
-    .getHot({ time: "day", limit: postLimit })
-    .then((hotPosts) => sendPostsToChannel(hotPosts, ctx))
-    .catch((err) => errorConsoleLog("Broccolee error: " + err));
+const getRedditPosts = (ctx, type) => {
+  if (type === "best") {
+    r
+      .getBest({ time: "day", limit: postLimit })
+      .then((hotPosts) => sendPostsToChannel(hotPosts, ctx))
+      .catch((err) => errorConsoleLog("Broccolee error: " + err));
+  } else {
+    r
+      .getHot({ time: "day", limit: postLimit })
+      .then((hotPosts) => sendPostsToChannel(hotPosts, ctx))
+      .catch((err) => errorConsoleLog("Broccolee error: " + err));
+  }
+
 };
 
 const sendPostsToChannel = (posts, ctx) => {
