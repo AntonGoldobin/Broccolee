@@ -1,27 +1,18 @@
 const Telegraf = require("telegraf");
 var cron = require("node-cron");
-const snoowrap = require("snoowrap");
 const dotenv = require("dotenv");
 const logger = require("node-color-log");
+const Pornhub = require("pornhub-api")
+const Videos = new Pornhub.Videos()
 
 dotenv.config();
 
-const testChannelId = process.env.BROCCOLEE_TG_CHANNEL;
-const token = process.env.BROCCOLEE_BOT_TOKEN;
+const channelId = process.env.PORNHUB_TG_CHANNEL;
+const token = process.env.PORNHUB_BOT_TOKEN;
 
 const postingDelayMin = 15;
 const dailyJobReplyConfig = () => { return `0 ${new Date().getHours()} * * *` };
-const postingJobConfig = () => { return `*/${postingDelayMin} * * * *` };
-const postLimit = 100;
-
-
-const r = new snoowrap({
-  userAgent:
-    "Hello, I need to create this app for my nodejs server for posting images from reddit to my telegram channel",
-  clientId: process.env.BROCCOLEE_SNOOWRAP_CLIENT_ID,
-  clientSecret: process.env.BROCCOLEE_SNOOWRAP_CLIENT_SECRET,
-  refreshToken: process.env.BROCCOLEE_SNOOWRAP_REFRESH_TOKEN,
-});
+const postingJobConfig = () => { return `*/${postingDelayMin} * * * * *` };
 
 let dailyJob = null;
 let postingJob = null;
@@ -68,31 +59,28 @@ const startPosting = (ctx, type) => {
 
   dailyJob = cron.schedule(dailyJobReplyConfig(), () => {
     successfulConsoleLog("The schedule was started AGAIN: " + getCurrentTime());
-    ctx.telegram.sendMessage(-1001473727416, "The posting schedule has been started AGAIN");
-    getRedditPosts(ctx, type);
+    // ctx.telegram.sendMessage(-1001473727416, "The posting schedule has been started AGAIN");
+    getPosts(ctx, type);
   }, {
     scheduled: true
   });
   dailyJob.start();
 
-  ctx.telegram.sendMessage(-1001473727416, "!!! The posting has been started !!!");
+  // ctx.telegram.sendMessage(-1001473727416, "!!! The posting has been started !!!");
   successfulConsoleLog("The schedule will be started soon: " + getCurrentTime());
-  getRedditPosts(ctx, type);
+  getPosts(ctx, type);
 }
 
-const getRedditPosts = (ctx, type) => {
-  if (type === "best") {
-    r
-      .getBest({ time: "day", limit: postLimit })
-      .then((hotPosts) => sendPostsToChannel(hotPosts, ctx))
-      .catch((err) => errorConsoleLog("Broccolee error: " + err));
-  } else {
-    r
-      .getHot({ time: "day", limit: postLimit })
-      .then((hotPosts) => sendPostsToChannel(hotPosts, ctx))
-      .catch((err) => errorConsoleLog("Broccolee error: " + err));
-  }
+const getPosts = (ctx, type) => {
 
+  Videos.search({
+    search: "Hard"
+  }).then(videos => {
+      console.log(videos)
+  })
+  // pornhub.search('Video', 'tokyo hot')
+  //   .then((res) => sendPostsToChannel(res.data, ctx))
+  //   .catch((err) => errorConsoleLog("Broccolee error: " + err));
 };
 
 const sendPostsToChannel = (posts, ctx) => {
@@ -100,19 +88,13 @@ const sendPostsToChannel = (posts, ctx) => {
 
     postingJob = cron.schedule(postingJobConfig(), () => {
       const post = posts[postIndex];
-      const text = `${post.title} \n[link](https://www.reddit.com/${post.permalink})`;
+      const text = post.title;
 
-      if (post.url.includes("redgifs") || post.url.includes(".gifv")) {
-        ctx.telegram.sendAnimation(testChannelId, post.preview.reddit_video_preview.fallback_url, {
-          caption: text,
-          parse_mode: "Markdown",
-        });
-      } else {
-        ctx.telegram.sendPhoto(testChannelId, post.url, {
-          caption: text,
-          parse_mode: "Markdown",
-        });
-      }
+      console.log(post)
+      ctx.telegram.sendVideo(channelId, post.url, {
+        caption: text,
+        parse_mode: "Markdown",
+      });
 
       if (!posts || postIndex + 1 === posts.length) {
         postingJob.destroy();

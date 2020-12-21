@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "@heroku-cli/color": "^1.1.14",
+    "@justalk/pornhub-api": "^3.4.0",
     "axios": "^0.21.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
@@ -18,6 +19,8 @@
     "node-color-log": "^5.2.0",
     "node-cron": "^2.0.3",
     "nodemon": "^2.0.6",
+    "pornhub-api": "0.0.1",
+    "pornhub.js": "^0.2.4",
     "pug": "2.0.0-beta11",
     "snoowrap": "^1.21.0",
     "telegraf": "^3.38.0"

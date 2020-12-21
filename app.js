@@ -7,7 +7,8 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
-const broccoleeBot = require('./telegram-bots/broccolee-bot')
+const broccoleeBot = require('./telegram-bots/broccolee-bot');
+const pornhubBot = require('./telegram-bots/pornhub-bot')
 
 var app = express();
 
@@ -43,6 +44,7 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
+// pornhubBot.startBot();
 broccoleeBot.startBot();
 
 module.exports = app;
