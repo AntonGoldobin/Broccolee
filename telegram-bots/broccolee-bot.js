@@ -10,8 +10,10 @@ const testChannelId = process.env.BROCCOLEE_TG_CHANNEL;
 const token = process.env.BROCCOLEE_BOT_TOKEN;
 
 const postingDelayMin = 14.4;
-const jobReplyConfig = `0 ${new Date().getHours()} * * *`;
+const jobReplyConfig = () => { return `0 ${new Date().getHours()} * * *` };
 const postLimit = 100;
+
+
 
 console.log(new Date().getHours());
 
@@ -59,7 +61,7 @@ function startBot() {
 const startPosting = (ctx, type) => {
   destroyJobs();
 
-  job = cron.schedule(jobReplyConfig, () => {
+  job = cron.schedule(jobReplyConfig(), () => {
     successfulConsoleLog("The schedule was started AGAIN: " + getCurrentTime());
     ctx.telegram.sendMessage(-1001473727416, "The posting schedule has been started AGAIN");
     getRedditPosts(ctx, type);
