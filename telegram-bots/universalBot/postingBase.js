@@ -24,7 +24,7 @@ const postBase = (config) => {
   function startBot() {
     const bot = new Telegraf(config.botToken);
 
-    startPosting(bot, "best");
+    startPosting(bot, "hot");
 
     bot.command("best", (ctx) => {
       ctx.reply(`Очередь будет запущена через ${config.postingDelayMin + 1} минут!`);
