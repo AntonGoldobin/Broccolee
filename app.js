@@ -1,16 +1,26 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
 
 const broccoleeBot = require('./telegram-bots/broccolee-bot');
-const pornhubBot = require('./telegram-bots/pornhub-bot')
+const pornhubBot = require('./telegram-bots/pornhub-bot');
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
 
-var app = express();
+
+dotenv.config();
+
+const app = express();
+
+mongoose.connect(`mongodb+srv://${process.env.MONGODB_AUTH}@cluster0.lyyb5.mongodb.net/tg_channels?retryWrites=true&w=majority`, {useNewUrlParser: true, useUnifiedTopology: true}, function(err){
+    if(err) return console.log(err);
+});
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

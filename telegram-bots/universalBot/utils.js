@@ -33,6 +33,7 @@ const getCurrentTime = () => {
 const downloadFile = (url, path, callback) => {
 	request.head(url, (err, res, body) => {
 		request(url)
+			.on('error', (err) => console.log("DOWNLOAD FILE ERROR:" + err))
 			.pipe(fs.createWriteStream(path))
 			.on('close', callback)
 	})
