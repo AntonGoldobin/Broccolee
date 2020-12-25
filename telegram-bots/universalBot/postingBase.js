@@ -46,13 +46,17 @@ const postBase = (config) => {
     });
 
     bot.command("pause", (ctx) => {
-      ctx.reply("Остановлено!");
-      postingJob.stop();
+      if (postingJob) {
+        ctx.reply("Остановлено!");
+        postingJob.stop();
+      }
     });
 
     bot.command("start", (ctx) => {
-      ctx.reply("Продолжаем!");
-      postingJob.start();
+      if (postingJob) {
+        ctx.reply("Продолжаем!");
+        postingJob.start();
+      }
     });
     
     bot.command("destroy", (ctx) => {
@@ -184,7 +188,9 @@ const postBase = (config) => {
     }, {
       scheduled: true
     });
-    dailyJob.start();
+    if (dailyJob) {
+      dailyJob.start();
+    }
   };
 
   const destroyJobs = () => {
