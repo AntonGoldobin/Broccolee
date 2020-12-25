@@ -1,6 +1,6 @@
 const Telegraf = require("telegraf");
 const cron = require("node-cron");
-const { successfulConsoleLog, getCurrentTime, downloadFile, getFileExtension, removeFile } = require("./utils");
+const { successfulConsoleLog, getCurrentTime, downloadFile, getFileExtension, removeFile} = require("./utils");
 const { getRedgifsVideo } = require("./gettingRedgifsVideo")
 const gettingPosts = require("./gettingPosts");
 const path = require('path');
@@ -28,53 +28,77 @@ const postBase = (config) => {
 
     const bot = new Telegraf(config.botToken);
 
-    // ctx.update.message.from   my chat id
-
+    // Clearing offline commands by bot (IMPORTANT)
     bot.use(async (ctx, next) => {
-    if (ctx.update.message.date * 1000 < Date.now() - 5000) {
+    if (_.get(ctx, "update.message.date") && ctx.update.message.date * 1000 < Date.now() - 5000) {
       return false
     }
-    await next()
+      await next();
     })
 
     startPosting(bot, "hot");
 
     bot.command("best", (ctx) => {
-      ctx.reply(`Очередь будет запущена через ${config.postingDelayMin + 1} минут!`);
+      if (ctx.update.message.from.id == 273094621) {
+        ctx.reply(`Очередь будет запущена через ${config.postingDelayMin} минут!`);
 
-      destroyJobs();
-      startPosting(ctx, "best");
+        destroyJobs();
+        startPosting(ctx, "best");
+      } else {
+        ctx.reply("Я тебя не знаю, брат");
+      }
+
     });
 
     bot.command("hot", (ctx) => {
-      ctx.reply(`Очередь будет запущена через ${config.postingDelayMin + 1} минут!`);
+      if (ctx.update.message.from.id == 273094621) {
+        ctx.reply(`Очередь будет запущена через ${config.postingDelayMin} минут!`);
 
-      destroyJobs();
-      startPosting(ctx, "hot");
+        destroyJobs();
+        startPosting(ctx, "hot");
+      } else {
+        ctx.reply("Я тебя не знаю, брат");
+      }
     });
 
     bot.command("pause", (ctx) => {
-      if (postingJob) {
-        ctx.reply("Остановлено!");
-        postingJob.stop();
+      if (ctx.update.message.from.id == 273094621) {
+        if (postingJob) {
+          ctx.reply("Остановлено!");
+          postingJob.stop();
+        }
+      } else {
+        ctx.reply("Я тебя не знаю, брат");
       }
     });
 
     bot.command("start", (ctx) => {
-      if (postingJob) {
-        ctx.reply("Продолжаем!");
-        postingJob.start();
+      if (ctx.update.message.from.id == 273094621) {
+        if (postingJob) {
+          ctx.reply("Продолжаем!");
+          postingJob.start();
+        }
+      } else {
+        ctx.reply("Я тебя не знаю, брат");
       }
     });
     
     bot.command("destroy", (ctx) => {
-      ctx.reply("Уничтожено!");
-      destroyJobs();
+      if (ctx.update.message.from.id == 273094621) {
+        ctx.reply("Уничтожено!");
+        destroyJobs();
+      } else {
+        ctx.reply("Я тебя не знаю, брат");
+      }
     });
 
     bot.command("destroyDBsrsly", (ctx) => {
-      removeAllPostsIds(config.channelName)
-      ctx.reply(`База данных (${config.channelName}) подчищена! Надеюсь ты знаешь, что делаешь`);
+      if (ctx.update.message.from.id == 273094621) {
+        removeAllPostsIds(config.channelName)
+        ctx.reply(`База данных (${config.channelName}) подчищена! Надеюсь ты знаешь, что делаешь`);
+      } else {
+        ctx.reply("Я тебя не знаю, брат");
+      }        
     });
 
     bot.launch();
@@ -86,15 +110,6 @@ const postBase = (config) => {
 
   const startPosting = (ctx, type) => {
     destroyJobs();
-
-    // dailyJob = cron.schedule(dailyJobReplyConfig(), () => {
-    //   successfulConsoleLog("The schedule was started AGAIN: " + getCurrentTime());
-    //   ctx.telegram.sendMessage(config.notificationChannelId, `**${config.nodeEnv}: ${config.channelName}** The posting schedule has been started AGAIN`);
-    //   getRedditPosts(ctx, type);
-    // }, {
-    //   scheduled: true
-    // });
-    // dailyJob.start();
 
     ctx.telegram.sendMessage(config.notificationChannelId, ` **${config.nodeEnv}: ${config.channelName}** !!! The posting has been started !!!`);
     successfulConsoleLog("The schedule will be started soon: " + getCurrentTime());

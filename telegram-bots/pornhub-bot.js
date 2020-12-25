@@ -9,7 +9,7 @@ const config = {
   notificationChannelId: process.env.NOTIFICATION_CHANNEL,
   botToken: process.env.PORNHUB_BOT_TOKEN,
   postingDelayMin: 20,
-  postLimit: 10,
+  postLimit: 100,
   snoowrapClientId: process.env.PORNHUB_SNOOWRAP_CLIENT_ID,
   snoowrapSecret: process.env.PORNHUB_SNOOWRAP_CLIENT_SECRET,
   snoowrapToken: process.env.PORNHUB_SNOOWRAP_REFRESH_TOKEN,
