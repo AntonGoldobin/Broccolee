@@ -16,10 +16,8 @@ const postBase = (config) => {
   // JOB CONFIG
   // ****
 
-  const dailyJobReplyConfig = () => { return `0 */12 * * *` };
   const postingJobConfig = `*/${config.postingDelayMin} * * * *`;
 
-  let dailyJob = null;
   let postingJob = null;
 
   // ****
@@ -27,7 +25,17 @@ const postBase = (config) => {
   // ****
 
   function startBot() {
+
     const bot = new Telegraf(config.botToken);
+
+    // ctx.update.message.from   my chat id
+
+    bot.use(async (ctx, next) => {
+    if (ctx.update.message.date * 1000 < Date.now() - 5000) {
+      return false
+    }
+    await next()
+    })
 
     startPosting(bot, "hot");
 
@@ -79,16 +87,16 @@ const postBase = (config) => {
   const startPosting = (ctx, type) => {
     destroyJobs();
 
-    dailyJob = cron.schedule(dailyJobReplyConfig(), () => {
-      successfulConsoleLog("The schedule was started AGAIN: " + getCurrentTime());
-      ctx.telegram.sendMessage(config.notificationChannelId, `**${config.nodeEnv}: ${config.channelName}** The posting schedule has been started AGAIN`);
-      getRedditPosts(ctx, type);
-    }, {
-      scheduled: true
-    });
-    dailyJob.start();
+    // dailyJob = cron.schedule(dailyJobReplyConfig(), () => {
+    //   successfulConsoleLog("The schedule was started AGAIN: " + getCurrentTime());
+    //   ctx.telegram.sendMessage(config.notificationChannelId, `**${config.nodeEnv}: ${config.channelName}** The posting schedule has been started AGAIN`);
+    //   getRedditPosts(ctx, type);
+    // }, {
+    //   scheduled: true
+    // });
+    // dailyJob.start();
 
-    ctx.telegram.sendMessage(config.notificationChannelId, `**${config.nodeEnv}: ${config.channelName}** !!! The posting has been started !!!`);
+    ctx.telegram.sendMessage(config.notificationChannelId, ` **${config.nodeEnv}: ${config.channelName}** !!! The posting has been started !!!`);
     successfulConsoleLog("The schedule will be started soon: " + getCurrentTime());
     getRedditPosts(ctx, type);
   }  
@@ -99,14 +107,14 @@ const postBase = (config) => {
 
   const getRedditPosts = (ctx, type) => {
     gettingPosts.getPosts(type, config.snoowrapClientId, config.snoowrapSecret, config.snoowrapToken, config.postLimit)
-      .then((posts => deletingDublicates(posts, ctx)));
+      .then((posts => deletingDublicates(posts, ctx, type)));
   };
 
   // ****
   // DELETING DUBLICATES
   // ****
 
-  const deletingDublicates = (newPosts, ctx) => {
+  const deletingDublicates = (newPosts, ctx, type) => {
 
     // Getting all post IDs from DB
     getPostsIds(config.channelName)
@@ -116,20 +124,20 @@ const postBase = (config) => {
         const uniqPosts = _.differenceWith(newPosts, postsIdsBD, (post, record) => post.url == record.url);
         return uniqPosts;
       }).then((uniqPosts => {
-        sendPostsToChannel(uniqPosts, ctx);
+        ctx.telegram.sendMessage(config.notificationChannelId, ` **${config.nodeEnv}: ${config.channelName}** Всего постов в очереди: ${uniqPosts.length}`);
+        sendPostsToChannel(uniqPosts, ctx, type);
       }))
       .catch(console.log);
   };
-  
 
   // ****
   // POSTING TO CHANNEL
   // ****
 
-  const sendPostsToChannel = (posts, ctx) => {
+  const sendPostsToChannel = (posts, ctx, type) => {
 
     if(posts.length == 0) return
-    let postIndex = 0
+    let postIndex = 0;
 
     postingJob = cron.schedule(postingJobConfig, () => {
 
@@ -180,24 +188,20 @@ const postBase = (config) => {
           }
         }
 
+      // If this is the last item of posts array => start ALL again
         if (!posts || postIndex + 1 === posts.length) {
           postingJob.destroy();
           postingJob = null;
+          ctx.telegram.sendMessage(config.notificationChannelId, ` **${config.nodeEnv}: ${config.channelName}** NEW ITERATION The posting schedule has been started`);
+          startPosting(ctx, type);
         }
       postIndex++;
     }, {
       scheduled: true
     });
-    if (dailyJob) {
-      dailyJob.start();
-    }
   };
 
   const destroyJobs = () => {
-    if (dailyJob) {
-      dailyJob.destroy();
-      dailyJob = null;
-    }
     if (postingJob) {
       postingJob.destroy();
       postingJob = null;

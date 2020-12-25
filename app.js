@@ -54,7 +54,7 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-pornhubBot.startPornhubBot();
+// pornhubBot.startPornhubBot();
 broccoleeBot.startBroccoleeBot();
 
 module.exports = app;
