@@ -17,7 +17,7 @@ const getPosts = (type, snoowrapClientId, snoowrapSecret, snoowrapToken, postLim
 						.catch((err) => errorConsoleLog("Broccolee error: " + err));
 	} else {
 		return r
-						.getHot({ time: "day", limit: postLimit })
+						.getTop({ time: "day", limit: postLimit })
 						.then((hotPosts) => hotPosts)
 						.catch((err) => errorConsoleLog("Broccolee error: " + err));
 	}

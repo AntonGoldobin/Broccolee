@@ -9,7 +9,8 @@ const usersRouter = require('./routes/users');
 
 const broccoleeBot = require('./telegram-bots/broccolee-bot');
 const pornhubBot = require('./telegram-bots/pornhub-bot');
-const tikTokNudes = require('./telegram-bots/tiktok-nudes-bot');
+const tikTokNudesBot = require('./telegram-bots/tiktok-nudes-bot');
+const hentaiBot = require('./telegram-bots/hentai-bot');
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 
@@ -58,6 +59,7 @@ app.use(function(err, req, res, next) {
 
 pornhubBot.startPornhubBot();
 broccoleeBot.startBroccoleeBot();
-tikTokNudes.startTikTokNudesBot();
+tikTokNudesBot.startTikTokNudesBot();
+hentaiBot.startHentaiBot();
 
 module.exports = app;

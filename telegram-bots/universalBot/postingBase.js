@@ -36,7 +36,7 @@ const postBase = (config) => {
       await next();
     })
 
-    startPosting(bot, "hot");
+    startPosting(bot, "top");
 
     bot.command("best", (ctx) => {
       if (ctx.update.message.from.id == 273094621) {
@@ -50,12 +50,12 @@ const postBase = (config) => {
 
     });
 
-    bot.command("hot", (ctx) => {
+    bot.command("top", (ctx) => {
       if (ctx.update.message.from.id == 273094621) {
         ctx.reply(`Очередь будет запущена через ${config.postingDelayMin} минут!`);
 
         destroyJobs();
-        startPosting(ctx, "hot");
+        startPosting(ctx, "top");
       } else {
         ctx.reply("Я тебя не знаю, брат");
       }
