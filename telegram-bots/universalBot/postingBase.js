@@ -48,6 +48,7 @@ const postBase = (config) => {
         ctx.reply("Я тебя не знаю, брат");
       }
 
+      console.log(ctx.channelPost)
     });
 
     bot.command("top", (ctx) => {
