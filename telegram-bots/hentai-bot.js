@@ -8,7 +8,7 @@ const config = {
   channelId: process.env.HENTAI_TG_CHANNEL,
   notificationChannelId: process.env.NOTIFICATION_CHANNEL,
   botToken: process.env.HENTAI_BOT_TOKEN,
-  postingDelayMin: 20,
+  postingDelayMin: 25,
   postLimit: 50,
   snoowrapClientId: process.env.HENTAI_SNOOWRAP_CLIENT_ID,
   snoowrapSecret: process.env.HENTAI_SNOOWRAP_CLIENT_SECRET,
@@ -19,6 +19,8 @@ const config = {
   //For video channels
   videoOnly: false,
   nodeEnv: process.env.NODE_ENV,
+  //ADS schedule config
+  adsJobConfig: "0 7,13,19 * * *",
 }
 
 const startHentaiBot = () => {

@@ -21,7 +21,7 @@ cron.schedule(postingJobConfig, () => {
   if (replySchedule.length === 0) return;
 
   console.log("schedule started")
-  replySchedule[0].reply(_.sample(commentsForReply));
+  replySchedule[0].reply(_.sample(commentsForReply)).catch(console.log);
   replySchedule.shift();
 })
 

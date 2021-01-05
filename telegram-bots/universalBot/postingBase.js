@@ -8,6 +8,7 @@ const { saveUniquePostsIds } = require('./../db/models/savePostId');
 const { getPostsIds } = require('./../db/models/getPostsId');
 const { removeAllPostsIds } = require('./../db/models/removeAllPostIds');
 const _ = require('lodash');
+const { startChannelAds, adsScheduleStart, adsScheduleStop } = require("./channelsAds");
 
 
 const postBase = (config) => {
@@ -36,6 +37,10 @@ const postBase = (config) => {
       await next();
     })
 
+    // Create ADS schedule for current channel
+    startChannelAds(config, bot);
+
+    // Starting the first posting iteration
     startPosting(bot, "top");
 
     bot.command("best", (ctx) => {
@@ -67,6 +72,8 @@ const postBase = (config) => {
         if (postingJob) {
           ctx.reply("Остановлено!");
           postingJob.stop();
+          //stoping ADS schedule
+          adsScheduleStop();
         }
       } else {
         ctx.reply("Я тебя не знаю, брат");
@@ -78,6 +85,8 @@ const postBase = (config) => {
         if (postingJob) {
           ctx.reply("Продолжаем!");
           postingJob.start();
+          //starting ADS schedule
+          adsScheduleStart();
         }
       } else {
         ctx.reply("Я тебя не знаю, брат");

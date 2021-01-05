@@ -19,6 +19,8 @@ const config = {
   //For video channels
   videoOnly: true,
   nodeEnv: process.env.NODE_ENV,
+  //ADS schedule config
+  adsJobConfig: "0 8,14,20 * * *",
 }
 
 const startTikTokNudesBot = () => {
