@@ -185,7 +185,7 @@ const postBase = (config) => {
 			postingJobConfig,
 			() => {
 				// Posting 2 posts at same time
-				_.times(3, () => {
+				_.times(2, () => {
 					// Save url to DB for checking in future and ignoring to posting
 					saveUniquePostsIds(posts[postIndex], config.channelName);
 
