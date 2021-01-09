@@ -24,15 +24,15 @@ const postBase = (config) => {
 	// ****
 
 	const startDailyPosting = cron.schedule("0 7 * * *", () => {
-		// postingJob.start();
-		// //starting ADS schedule
-		// adsScheduleStart();
+		postingJob.start();
+		//starting ADS schedule
+		adsScheduleStart();
 	});
 
 	const stopDailyPosting = cron.schedule("0 22 * * *", () => {
-		// postingJob.stop();
-		// //stoping ADS schedule
-		// adsScheduleStop();
+		postingJob.stop();
+		//stoping ADS schedule
+		adsScheduleStop();
 	});
 
 	// Starting at morning
@@ -184,7 +184,7 @@ const postBase = (config) => {
 		postingJob = cron.schedule(
 			postingJobConfig,
 			() => {
-				// Posting 2 posts at same time
+				// Posting 2 posts at the same time
 				_.times(2, () => {
 					// Save url to DB for checking in future and ignoring to posting
 					saveUniquePostsIds(posts[postIndex], config.channelName);
