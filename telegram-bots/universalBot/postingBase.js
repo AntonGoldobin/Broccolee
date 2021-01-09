@@ -23,17 +23,17 @@ const postBase = (config) => {
 	// STARTING/STOPING DAILY POSTING SCHEDULES
 	// ****
 
-	const startDailyPosting = cron.schedule("0 7 * * *", () => {
-		postingJob.start();
-		//starting ADS schedule
-		adsScheduleStart();
-	});
+	// const startDailyPosting = cron.schedule("0 7 * * *", () => {
+	// 	postingJob.start();
+	// 	//starting ADS schedule
+	// 	adsScheduleStart();
+	// });
 
-	const stopDailyPosting = cron.schedule("0 22 * * *", () => {
-		postingJob.stop();
-		//stoping ADS schedule
-		adsScheduleStop();
-	});
+	// const stopDailyPosting = cron.schedule("0 22 * * *", () => {
+	// 	postingJob.stop();
+	// 	//stoping ADS schedule
+	// 	adsScheduleStop();
+	// });
 
 	// Starting at morning
 	startDailyPosting.start();
