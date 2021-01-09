@@ -1,244 +1,269 @@
 const Telegraf = require("telegraf");
 const cron = require("node-cron");
-const { successfulConsoleLog, getCurrentTime, downloadFile, getFileExtension, removeFile} = require("./utils");
-const { getRedgifsVideo } = require("./gettingRedgifsVideo")
+const { successfulConsoleLog, getCurrentTime, downloadFile, getFileExtension, removeFile } = require("./utils");
+const { getRedgifsVideo } = require("./gettingRedgifsVideo");
 const gettingPosts = require("./gettingPosts");
-const path = require('path');
-const { saveUniquePostsIds } = require('./../db/models/savePostId');
-const { getPostsIds } = require('./../db/models/getPostsId');
-const { removeAllPostsIds } = require('./../db/models/removeAllPostIds');
-const _ = require('lodash');
+const path = require("path");
+const { saveUniquePostsIds } = require("./../db/models/savePostId");
+const { getPostsIds } = require("./../db/models/getPostsId");
+const { removeAllPostsIds } = require("./../db/models/removeAllPostIds");
+const _ = require("lodash");
 const { startChannelAds, adsScheduleStart, adsScheduleStop } = require("./channelsAds");
 
-
 const postBase = (config) => {
+	// ****
+	// JOB CONFIG
+	// ****
 
-  // ****
-  // JOB CONFIG
-  // ****
+	const postingJobConfig = `*/${config.postingDelayMin} * * * *`;
 
-  const postingJobConfig = `*/${config.postingDelayMin} * * * *`;
+	let postingJob = null;
 
-  let postingJob = null;
+	// ****
+	// STARTING/STOPING DAILY POSTING SCHEDULES
+	// ****
 
-  // ****
-  // CREATING THE BOT AND CHECK COMMANDS
-  // ****
+	const startDailyPosting = cron.schedule("0 7 * * *", () => {
+		postingJob.start();
+		//starting ADS schedule
+		adsScheduleStart();
+	});
 
-  function startBot() {
+	const stopDailyPosting = cron.schedule("0 22 * * *", () => {
+		postingJob.stop();
+		//stoping ADS schedule
+		adsScheduleStop();
+	});
 
-    const bot = new Telegraf(config.botToken);
+	// Starting at morning
+	startDailyPosting.start();
+	// Stoping at night
+	stopDailyPosting.start();
 
-    // Clearing offline commands by bot (IMPORTANT)
-    bot.use(async (ctx, next) => {
-    if (_.get(ctx, "update.message.date") && ctx.update.message.date * 1000 < Date.now() - 5000) {
-      return false
-    }
-      await next();
-    })
+	// ****
+	// CREATING THE BOT AND CHECK COMMANDS
+	// ****
 
-    // Create ADS schedule for current channel
-    startChannelAds(config, bot);
+	function startBot() {
+		const bot = new Telegraf(config.botToken);
 
-    // Starting the first posting iteration
-    startPosting(bot, "top");
+		// Clearing offline commands by bot (IMPORTANT)
+		bot.use(async (ctx, next) => {
+			if (_.get(ctx, "update.message.date") && ctx.update.message.date * 1000 < Date.now() - 5000) {
+				return false;
+			}
+			await next();
+		});
 
-    bot.command("best", (ctx) => {
-      if (ctx.update.message.from.id == 273094621) {
-        ctx.reply(`Очередь будет запущена через ${config.postingDelayMin} минут!`);
+		// Create ADS schedule for current channel
+		startChannelAds(config, bot);
 
-        destroyJobs();
-        startPosting(ctx, "best");
-      } else {
-        ctx.reply("Я тебя не знаю, брат");
-      }
+		// Starting the first posting iteration
+		startPosting(bot, "top");
 
-      console.log(ctx.channelPost)
-    });
+		bot.command("best", (ctx) => {
+			if (ctx.update.message.from.id == 273094621) {
+				ctx.reply(`Очередь будет запущена через ${config.postingDelayMin} минут!`);
 
-    bot.command("top", (ctx) => {
-      if (ctx.update.message.from.id == 273094621) {
-        ctx.reply(`Очередь будет запущена через ${config.postingDelayMin} минут!`);
+				destroyJobs();
+				startPosting(ctx, "best");
+			} else {
+				ctx.reply("Я тебя не знаю, брат");
+			}
+		});
 
-        destroyJobs();
-        startPosting(ctx, "top");
-      } else {
-        ctx.reply("Я тебя не знаю, брат");
-      }
-    });
+		bot.command("top", (ctx) => {
+			if (ctx.update.message.from.id == 273094621) {
+				ctx.reply(`Очередь будет запущена через ${config.postingDelayMin} минут!`);
 
-    bot.command("pause", (ctx) => {
-      if (ctx.update.message.from.id == 273094621) {
-        if (postingJob) {
-          ctx.reply("Остановлено!");
-          postingJob.stop();
-          //stoping ADS schedule
-          adsScheduleStop();
-        }
-      } else {
-        ctx.reply("Я тебя не знаю, брат");
-      }
-    });
+				destroyJobs();
+				startPosting(ctx, "top");
+			} else {
+				ctx.reply("Я тебя не знаю, брат");
+			}
+		});
 
-    bot.command("start", (ctx) => {
-      if (ctx.update.message.from.id == 273094621) {
-        if (postingJob) {
-          ctx.reply("Продолжаем!");
-          postingJob.start();
-          //starting ADS schedule
-          adsScheduleStart();
-        }
-      } else {
-        ctx.reply("Я тебя не знаю, брат");
-      }
-    });
-    
-    bot.command("destroy", (ctx) => {
-      if (ctx.update.message.from.id == 273094621) {
-        ctx.reply("Уничтожено!");
-        destroyJobs();
-      } else {
-        ctx.reply("Я тебя не знаю, брат");
-      }
-    });
+		bot.command("pause", (ctx) => {
+			if (ctx.update.message.from.id == 273094621) {
+				if (postingJob) {
+					ctx.reply("Остановлено!");
+					postingJob.stop();
+					//stoping ADS schedule
+					adsScheduleStop();
+				}
+			} else {
+				ctx.reply("Я тебя не знаю, брат");
+			}
+		});
 
-    bot.command("destroyDBsrsly", (ctx) => {
-      if (ctx.update.message.from.id == 273094621) {
-        removeAllPostsIds(config.channelName)
-        ctx.reply(`База данных (${config.channelName}) подчищена! Надеюсь ты знаешь, что делаешь`);
-      } else {
-        ctx.reply("Я тебя не знаю, брат");
-      }        
-    });
+		bot.command("start", (ctx) => {
+			if (ctx.update.message.from.id == 273094621) {
+				if (postingJob) {
+					ctx.reply("Продолжаем!");
+					postingJob.start();
+					//starting ADS schedule
+					adsScheduleStart();
+				}
+			} else {
+				ctx.reply("Я тебя не знаю, брат");
+			}
+		});
 
-    bot.launch();
-  }
+		bot.command("destroy", (ctx) => {
+			if (ctx.update.message.from.id == 273094621) {
+				ctx.reply("Уничтожено!");
+				destroyJobs();
+			} else {
+				ctx.reply("Я тебя не знаю, брат");
+			}
+		});
 
-  // ****
-  // STARTING SCHEDULE
-  // ****
+		bot.command("destroyDBsrsly", (ctx) => {
+			if (ctx.update.message.from.id == 273094621) {
+				removeAllPostsIds(config.channelName);
+				ctx.reply(`База данных (${config.channelName}) подчищена! Надеюсь ты знаешь, что делаешь`);
+			} else {
+				ctx.reply("Я тебя не знаю, брат");
+			}
+		});
 
-  const startPosting = (ctx, type) => {
-    destroyJobs();
+		bot.launch();
+	}
 
-    ctx.telegram.sendMessage(config.notificationChannelId, ` **${config.nodeEnv}: ${config.channelName}** !!! The posting has been started !!!`);
-    successfulConsoleLog("The schedule will be started soon: " + getCurrentTime());
-    getRedditPosts(ctx, type);
-  }  
+	// ****
+	// STARTING SCHEDULE
+	// ****
 
-  // ****
-  // GETTING DATA
-  // ****
+	const startPosting = (ctx, type) => {
+		destroyJobs();
 
-  const getRedditPosts = (ctx, type) => {
-    gettingPosts.getPosts(type, config.snoowrapClientId, config.snoowrapSecret, config.snoowrapToken, config.postLimit)
-      .then((posts => deletingDublicates(posts, ctx, type)));
-  };
+		successfulConsoleLog("The schedule will be started soon: " + getCurrentTime());
+		getRedditPosts(ctx, type);
+	};
 
-  // ****
-  // DELETING DUBLICATES
-  // ****
+	// ****
+	// GETTING DATA
+	// ****
 
-  const deletingDublicates = (newPosts, ctx, type) => {
+	const getRedditPosts = (ctx, type) => {
+		gettingPosts
+			.getPosts(type, config.snoowrapClientId, config.snoowrapSecret, config.snoowrapToken, config.postLimit)
+			.then((posts) => deletingDublicates(posts, ctx, type));
+	};
 
-    // Getting all post IDs from DB
-    getPostsIds(config.channelName)
-      .then((postsIdsBD) => {
+	// ****
+	// DELETING DUBLICATES
+	// ****
 
-        // Remove dublicates by IDs
-        const uniqPosts = _.differenceWith(newPosts, postsIdsBD, (post, record) => post.url == record.url);
-        return uniqPosts;
-      }).then((uniqPosts => {
-        ctx.telegram.sendMessage(config.notificationChannelId, ` **${config.nodeEnv}: ${config.channelName}** Всего постов в очереди: ${uniqPosts.length}`);
-        sendPostsToChannel(uniqPosts, ctx, type);
-      }))
-      .catch(console.log);
-  };
+	const deletingDublicates = (newPosts, ctx, type) => {
+		// Getting all post IDs from DB
+		getPostsIds(config.channelName)
+			.then((postsIdsBD) => {
+				// Remove dublicates by IDs
+				const uniqPosts = _.differenceWith(newPosts, postsIdsBD, (post, record) => post.url == record.url);
+				return uniqPosts;
+			})
+			.then((uniqPosts) => {
+				ctx.telegram.sendMessage(
+					config.notificationChannelId,
+					` **${config.nodeEnv}: ${config.channelName}** Всего постов в очереди: ${uniqPosts.length}`,
+				);
+				sendPostsToChannel(uniqPosts, ctx, type);
+			})
+			.catch(console.log);
+	};
 
-  // ****
-  // POSTING TO CHANNEL
-  // ****
+	// ****
+	// POSTING TO CHANNEL
+	// ****
 
-  const sendPostsToChannel = (posts, ctx, type) => {
+	const sendPostsToChannel = (posts, ctx, type) => {
+		if (posts.length == 0) return;
+		let postIndex = 0;
 
-    if(posts.length == 0) return
-    let postIndex = 0;
+		postingJob = cron.schedule(
+			postingJobConfig,
+			() => {
+				// Posting 2 posts at same time
+				_.times(3, () => {
+					// Save url to DB for checking in future and ignoring to posting
+					saveUniquePostsIds(posts[postIndex], config.channelName);
 
-    postingJob = cron.schedule(postingJobConfig, () => {
+					// Create description for the post
+					const post = posts[postIndex];
+					const link = config.hasLink ? `\n[link](https://www.reddit.com/${post.permalink})` : "";
+					const postTitle = post.title ? post.title : "";
+					const text = config.hasText ? postTitle + link : "";
 
-      // Save url to DB for checking in future and ignoring to posting
-      saveUniquePostsIds(posts[postIndex], config.channelName);
+					// POSTING FOR CHANNELS WITH VIDEOS ONLY
+					if (config.videoOnly) {
+						if (post.url.includes("redgifs")) {
+							const url = post.url_overridden_by_dest;
 
+							// Parsing web-page with video for getting video-url
+							getRedgifsVideo(url)
+								.then((redgifsUrl) => {
+									const fileName = `${config.channelName + Date.now()}.${getFileExtension(redgifsUrl)}`;
+									const filePath = `./telegram-bots/downloaded-files/${fileName}`;
+									const downloadedFilePath = path.join(__dirname, "../downloaded-files/", fileName);
 
-      // Create description for the post
-      const post = posts[postIndex];
-      const link = config.hasLink ? `\n[link](https://www.reddit.com/${post.permalink})` : ""
-      const postTitle = post.title ? post.title : ""
-      const text = config.hasText ? postTitle + link : "";
-      
-      // POSTING FOR CHANNELS WITH VIDEOS ONLY
-      if (config.videoOnly) {
-        if (post.url.includes("redgifs")) {
-          const url = post.url_overridden_by_dest;
+									downloadFile(redgifsUrl, filePath, () => {
+										ctx.telegram.sendVideo(config.channelId, {
+											source: downloadedFilePath,
+											caption: text,
+											parse_mode: "Markdown",
+										});
+										removeFile(filePath);
+									});
+								})
+								.catch(console.log);
+						}
+						// POSTING FOR CHANNELS WITH BOTH TYPES
+					} else {
+						if (post.url.includes("redgifs") || post.url.includes(".gifv")) {
+							ctx.telegram.sendVideo(config.channelId, post.preview.reddit_video_preview.fallback_url, {
+								caption: text,
+								parse_mode: "Markdown",
+							});
+						} else {
+							ctx.telegram.sendPhoto(config.channelId, post.url, {
+								caption: text,
+								parse_mode: "Markdown",
+							});
+						}
+					}
 
-          // Parsing web-page with video for getting video-url
-          getRedgifsVideo(url)
-            .then(redgifsUrl => {
-              const fileName = `${config.channelName + Date.now()}.${getFileExtension(redgifsUrl)}`
-              const filePath = `./telegram-bots/downloaded-files/${fileName}`
-              const downloadedFilePath = path.join(__dirname, "../downloaded-files/", fileName)
+					// If this is the last item of posts array => start ALL again
+					if (!posts || postIndex + 1 === posts.length) {
+						postingJob.destroy();
+						postingJob = null;
+						ctx.telegram.sendMessage(
+							config.notificationChannelId,
+							` **${config.nodeEnv}: ${config.channelName}** NEW ITERATION The posting schedule has been started`,
+						);
+						startPosting(ctx, type);
+					}
+					postIndex++;
+				});
+			},
+			{
+				scheduled: true,
+			},
+		);
+	};
 
-              downloadFile(redgifsUrl, filePath, () => {
-                ctx.telegram.sendVideo(config.channelId, {
-                  source: downloadedFilePath,
-                  caption: text,
-                  parse_mode: "Markdown",
-                });
-                removeFile(filePath);
-              });
-            }).catch(console.log);
-          }
-        // POSTING FOR CHANNELS WITH BOTH TYPES
-        } else {
-          if (post.url.includes("redgifs") || post.url.includes(".gifv")) {
-            ctx.telegram.sendVideo(config.channelId, post.preview.reddit_video_preview.fallback_url, {
-              caption: text,
-              parse_mode: "Markdown",
-            });
-          } else {
-            ctx.telegram.sendPhoto(config.channelId, post.url, {
-              caption: text,
-              parse_mode: "Markdown",
-            });
-          }
-        }
+	const destroyJobs = () => {
+		if (postingJob) {
+			postingJob.destroy();
+			postingJob = null;
+		}
+	};
 
-      // If this is the last item of posts array => start ALL again
-        if (!posts || postIndex + 1 === posts.length) {
-          postingJob.destroy();
-          postingJob = null;
-          ctx.telegram.sendMessage(config.notificationChannelId, ` **${config.nodeEnv}: ${config.channelName}** NEW ITERATION The posting schedule has been started`);
-          startPosting(ctx, type);
-        }
-      postIndex++;
-    }, {
-      scheduled: true
-    });
-  };
+	// ****
+	// STARTING ALL OPERATIONS
+	// ****
 
-  const destroyJobs = () => {
-    if (postingJob) {
-      postingJob.destroy();
-      postingJob = null;
-    }
-  };
-
-  // ****
-  // STARTING ALL OPERATIONS
-  // ****
-
-  startBot();
-
+	startBot();
 };
 
 module.exports.postBase = postBase;
