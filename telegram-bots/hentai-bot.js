@@ -8,7 +8,7 @@ const config = {
 	channelId: process.env.HENTAI_TG_CHANNEL,
 	notificationChannelId: process.env.NOTIFICATION_CHANNEL,
 	botToken: process.env.HENTAI_BOT_TOKEN,
-	postingDelayMin: 35,
+	postingMin: 25,
 	postLimit: 50,
 	snoowrapClientId: process.env.HENTAI_SNOOWRAP_CLIENT_ID,
 	snoowrapSecret: process.env.HENTAI_SNOOWRAP_CLIENT_SECRET,

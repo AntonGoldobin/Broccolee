@@ -1,18 +1,31 @@
-const request = require("request"),
-			cheerio = require("cheerio");
+const Nightmare = require("nightmare");
+
+// Some options I set for all instances
+const nightmareOptions = {
+	gotoTimeout: 10000,
+	loadTimeout: 15000,
+	waitTimeout: 10000,
+};
 
 const getRedgifsVideo = (url) => {
 	return new Promise(function(resolve, reject) {
-		request(url, function (error, response, body) {
-			if (!error) {
-				const $ = cheerio.load(body);
-				resolve($(".video source").first().attr('src'));
-				
-			} else {
-				reject("Произошла ошибка: " + error);
-			}
-		});
-	})
-}
+		let nightmare = Nightmare(nightmareOptions);
+
+		nightmare
+			.goto(url)
+			.wait("video source:first-child")
+			.evaluate(() => document.querySelector("video source:first-child").getAttribute("src"))
+			.end()
+			.then((url) => {
+				nightmare = null;
+				resolve(url);
+			})
+			.catch((error) => {
+				console.error("Redgifs search failed:", error);
+				nightmare = null;
+				reject();
+			});
+	});
+};
 
 module.exports.getRedgifsVideo = getRedgifsVideo;

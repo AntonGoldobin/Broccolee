@@ -15,7 +15,7 @@ const postBase = (config) => {
 	// JOB CONFIG
 	// ****
 
-	const postingJobConfig = `*/${config.postingDelayMin} * * * *`;
+	const postingJobConfig = `${config.postingMin} * * * *`;
 
 	let postingJob = null;
 
@@ -63,7 +63,7 @@ const postBase = (config) => {
 
 		bot.command("best", (ctx) => {
 			if (ctx.update.message.from.id == 273094621) {
-				ctx.reply(`Очередь будет запущена через ${config.postingDelayMin} минут!`);
+				ctx.reply(`Очередь будет запущена через ${config.postingMin} минут!`);
 
 				destroyJobs();
 				startPosting(ctx, "best");
@@ -74,7 +74,7 @@ const postBase = (config) => {
 
 		bot.command("top", (ctx) => {
 			if (ctx.update.message.from.id == 273094621) {
-				ctx.reply(`Очередь будет запущена через ${config.postingDelayMin} минут!`);
+				ctx.reply(`Очередь будет запущена через ${config.postingMin} минут!`);
 
 				destroyJobs();
 				startPosting(ctx, "top");
@@ -168,7 +168,13 @@ const postBase = (config) => {
 					config.notificationChannelId,
 					` **${config.nodeEnv}: ${config.channelName}** Всего постов в очереди: ${uniqPosts.length}`,
 				);
-				sendPostsToChannel(uniqPosts, ctx, type);
+				// Removing all non-video posts for schedule
+				if (config.videoOnly) {
+					const filteredVideos = uniqPosts.filter((post) => post.url.includes("redgifs"));
+					sendPostsToChannel(filteredVideos, ctx, type);
+				} else {
+					sendPostsToChannel(uniqPosts, ctx, type);
+				}
 			})
 			.catch(console.log);
 	};
@@ -184,18 +190,18 @@ const postBase = (config) => {
 		postingJob = cron.schedule(
 			postingJobConfig,
 			() => {
-				// Save url to DB for checking in future and ignoring to posting
-				saveUniquePostsIds(posts[postIndex], config.channelName);
+				_.times(3, () => {
+					// Save url to DB for checking in future and ignoring to posting
+					saveUniquePostsIds(posts[postIndex], config.channelName);
 
-				// Create description for the post
-				const post = posts[postIndex];
-				const link = config.hasLink ? `\n[link](https://www.reddit.com/${post.permalink})` : "";
-				const postTitle = post.title ? post.title : "";
-				const text = config.hasText ? postTitle + link : "";
+					// Create description for the post
+					const post = posts[postIndex];
+					const link = config.hasLink ? `\n[link](https://www.reddit.com/${post.permalink})` : "";
+					const postTitle = post.title ? post.title : "";
+					const text = config.hasText ? postTitle + link : "";
 
-				// POSTING FOR CHANNELS WITH VIDEOS ONLY
-				if (config.videoOnly) {
-					if (post.url.includes("redgifs")) {
+					// POSTING FOR CHANNELS WITH VIDEOS ONLY
+					if (config.videoOnly) {
 						const url = post.url_overridden_by_dest;
 
 						// Parsing web-page with video for getting video-url
@@ -215,33 +221,33 @@ const postBase = (config) => {
 								});
 							})
 							.catch(console.log);
-					}
-					// POSTING FOR CHANNELS WITH BOTH TYPES
-				} else {
-					if (post.url.includes("redgifs") || post.url.includes(".gifv")) {
-						ctx.telegram.sendVideo(config.channelId, post.preview.reddit_video_preview.fallback_url, {
-							caption: text,
-							parse_mode: "Markdown",
-						});
+						// POSTING FOR CHANNELS WITH BOTH TYPES
 					} else {
-						ctx.telegram.sendPhoto(config.channelId, post.url, {
-							caption: text,
-							parse_mode: "Markdown",
-						});
+						if (post.url.includes("redgifs") || post.url.includes(".gifv")) {
+							ctx.telegram.sendVideo(config.channelId, post.preview.reddit_video_preview.fallback_url, {
+								caption: text,
+								parse_mode: "Markdown",
+							});
+						} else {
+							ctx.telegram.sendPhoto(config.channelId, post.url, {
+								caption: text,
+								parse_mode: "Markdown",
+							});
+						}
 					}
-				}
 
-				// If this is the last item of posts array => start ALL again
-				if (!posts || postIndex + 1 === posts.length) {
-					postingJob.destroy();
-					postingJob = null;
-					ctx.telegram.sendMessage(
-						config.notificationChannelId,
-						` **${config.nodeEnv}: ${config.channelName}** NEW ITERATION The posting schedule has been started`,
-					);
-					startPosting(ctx, type);
-				}
-				postIndex++;
+					// If this is the last item of posts array => start ALL again
+					if (!posts || postIndex + 1 === posts.length) {
+						postingJob.destroy();
+						postingJob = null;
+						ctx.telegram.sendMessage(
+							config.notificationChannelId,
+							` **${config.nodeEnv}: ${config.channelName}** NEW ITERATION The posting schedule has been started`,
+						);
+						startPosting(ctx, type);
+					}
+					postIndex++;
+				});
 			},
 			{
 				scheduled: true,

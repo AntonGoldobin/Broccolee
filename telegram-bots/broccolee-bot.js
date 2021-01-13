@@ -8,7 +8,7 @@ const config = {
 	channelId: process.env.BROCCOLEE_TG_CHANNEL,
 	notificationChannelId: process.env.NOTIFICATION_CHANNEL,
 	botToken: process.env.BROCCOLEE_BOT_TOKEN,
-	postingDelayMin: 32,
+	postingMin: 12,
 	postLimit: 50,
 	snoowrapClientId: process.env.BROCCOLEE_SNOOWRAP_CLIENT_ID,
 	snoowrapSecret: process.env.BROCCOLEE_SNOOWRAP_CLIENT_SECRET,
