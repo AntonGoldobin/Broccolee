@@ -8,7 +8,7 @@ const config = {
 	channelId: process.env.TIKTOK_NUDES_TG_CHANNEL,
 	notificationChannelId: process.env.NOTIFICATION_CHANNEL,
 	botToken: process.env.TIKTOK_NUDES_BOT_TOKEN,
-	postingMin: 37,
+	postingMin: 29,
 	postLimit: 50,
 	snoowrapClientId: process.env.TIKTOK_NUDES_SNOOWRAP_CLIENT_ID,
 	snoowrapSecret: process.env.TIKTOK_NUDES_SNOOWRAP_CLIENT_SECRET,

@@ -15,7 +15,7 @@ const postBase = (config) => {
 	// JOB CONFIG
 	// ****
 
-	const postingJobConfig = `${config.postingMin} * * * *`;
+	const postingJobConfig = `*/${config.postingMin} * * * *`;
 
 	let postingJob = null;
 
@@ -148,7 +148,8 @@ const postBase = (config) => {
 	const getRedditPosts = (ctx, type) => {
 		gettingPosts
 			.getPosts(type, config.snoowrapClientId, config.snoowrapSecret, config.snoowrapToken, config.postLimit)
-			.then((posts) => deletingDublicates(posts, ctx, type));
+			.then((posts) => deletingDublicates(posts, ctx, type))
+			.catch(console.log);
 	};
 
 	// ****
@@ -190,68 +191,66 @@ const postBase = (config) => {
 		postingJob = cron.schedule(
 			postingJobConfig,
 			() => {
-				_.times(3, () => {
-					// Create description for the post
-					const post = posts[postIndex];
-					const link = config.hasLink ? `\n[link](https://www.reddit.com/${post.permalink})` : "";
-					const postTitle = post.title ? post.title : "";
-					const text = config.hasText ? postTitle + link : "";
+				// Create description for the post
+				const post = posts[postIndex];
+				const link = config.hasLink ? `\n[link](https://www.reddit.com/${post.permalink})` : "";
+				const postTitle = post.title ? post.title : "";
+				const text = config.hasText ? postTitle + link : "";
 
-					// POSTING FOR CHANNELS WITH VIDEOS ONLY
-					if (config.videoOnly) {
-						const url = post.url_overridden_by_dest;
+				// POSTING FOR CHANNELS WITH VIDEOS ONLY
+				if (config.videoOnly) {
+					const url = post.url_overridden_by_dest;
 
-						// Parsing web-page with video for getting video-url
-						getRedgifsVideo(url)
-							.then((redgifsUrl) => {
-								if (!redgifsUrl) return;
-								const fileName = `${config.channelName + Date.now()}.${getFileExtension(redgifsUrl)}`;
-								const filePath = `./telegram-bots/downloaded-files/${fileName}`;
-								const downloadedFilePath = path.join(__dirname, "../downloaded-files/", fileName);
+					// Parsing web-page with video for getting video-url
+					getRedgifsVideo(url)
+						.then((redgifsUrl) => {
+							if (!redgifsUrl) return;
+							const fileName = `${config.channelName + Date.now()}.${getFileExtension(redgifsUrl)}`;
+							const filePath = `./telegram-bots/downloaded-files/${fileName}`;
+							const downloadedFilePath = path.join(__dirname, "../downloaded-files/", fileName);
 
-								downloadFile(redgifsUrl, filePath, () => {
-									ctx.telegram.sendVideo(config.channelId, {
-										source: downloadedFilePath,
-										caption: text,
-										parse_mode: "Markdown",
-									});
-
-									// Save url to DB for checking in future and ignoring to posting
-									saveUniquePostsIds(posts[postIndex], config.channelName);
-									removeFile(filePath);
+							downloadFile(redgifsUrl, filePath, () => {
+								ctx.telegram.sendVideo(config.channelId, {
+									source: downloadedFilePath,
+									caption: text,
+									parse_mode: "Markdown",
 								});
-							})
-							.catch(console.log);
-						// POSTING FOR CHANNELS WITH BOTH TYPES
+
+								// Save url to DB for checking in future and ignoring to posting
+								saveUniquePostsIds(posts[postIndex], config.channelName);
+								removeFile(filePath);
+							});
+						})
+						.catch(console.log);
+					// POSTING FOR CHANNELS WITH BOTH TYPES
+				} else {
+					// Save url to DB for checking in future and ignoring to posting
+					saveUniquePostsIds(posts[postIndex], config.channelName);
+
+					if (post.url.includes("redgifs") || post.url.includes(".gifv")) {
+						ctx.telegram.sendVideo(config.channelId, post.preview.reddit_video_preview.fallback_url, {
+							caption: text,
+							parse_mode: "Markdown",
+						});
 					} else {
-						// Save url to DB for checking in future and ignoring to posting
-						saveUniquePostsIds(posts[postIndex], config.channelName);
-
-						if (post.url.includes("redgifs") || post.url.includes(".gifv")) {
-							ctx.telegram.sendVideo(config.channelId, post.preview.reddit_video_preview.fallback_url, {
-								caption: text,
-								parse_mode: "Markdown",
-							});
-						} else {
-							ctx.telegram.sendPhoto(config.channelId, post.url, {
-								caption: text,
-								parse_mode: "Markdown",
-							});
-						}
+						ctx.telegram.sendPhoto(config.channelId, post.url, {
+							caption: text,
+							parse_mode: "Markdown",
+						});
 					}
+				}
 
-					// If this is the last item of posts array => start ALL again
-					if (!posts || postIndex + 1 === posts.length) {
-						postingJob.destroy();
-						postingJob = null;
-						ctx.telegram.sendMessage(
-							config.notificationChannelId,
-							` **${config.nodeEnv}: ${config.channelName}** NEW ITERATION The posting schedule has been started`,
-						);
-						startPosting(ctx, type);
-					}
-					postIndex++;
-				});
+				// If this is the last item of posts array => start ALL again
+				if (!posts || postIndex + 1 === posts.length) {
+					postingJob.destroy();
+					postingJob = null;
+					ctx.telegram.sendMessage(
+						config.notificationChannelId,
+						` **${config.nodeEnv}: ${config.channelName}** NEW ITERATION The posting schedule has been started`,
+					);
+					startPosting(ctx, type);
+				}
+				postIndex++;
 			},
 			{
 				scheduled: true,

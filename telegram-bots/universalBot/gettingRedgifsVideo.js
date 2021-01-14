@@ -4,7 +4,7 @@ const Nightmare = require("nightmare");
 const nightmareOptions = {
 	gotoTimeout: 10000,
 	loadTimeout: 15000,
-	waitTimeout: 10000,
+	waitTimeout: 20000,
 };
 
 const getRedgifsVideo = (url) => {
@@ -23,7 +23,7 @@ const getRedgifsVideo = (url) => {
 			.catch((error) => {
 				console.error("Redgifs search failed:", error);
 				nightmare = null;
-				reject();
+				reject(error);
 			});
 	});
 };
