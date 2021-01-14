@@ -191,9 +191,6 @@ const postBase = (config) => {
 			postingJobConfig,
 			() => {
 				_.times(3, () => {
-					// Save url to DB for checking in future and ignoring to posting
-					saveUniquePostsIds(posts[postIndex], config.channelName);
-
 					// Create description for the post
 					const post = posts[postIndex];
 					const link = config.hasLink ? `\n[link](https://www.reddit.com/${post.permalink})` : "";
@@ -207,6 +204,7 @@ const postBase = (config) => {
 						// Parsing web-page with video for getting video-url
 						getRedgifsVideo(url)
 							.then((redgifsUrl) => {
+								if (!redgifsUrl) return;
 								const fileName = `${config.channelName + Date.now()}.${getFileExtension(redgifsUrl)}`;
 								const filePath = `./telegram-bots/downloaded-files/${fileName}`;
 								const downloadedFilePath = path.join(__dirname, "../downloaded-files/", fileName);
@@ -217,12 +215,18 @@ const postBase = (config) => {
 										caption: text,
 										parse_mode: "Markdown",
 									});
+
+									// Save url to DB for checking in future and ignoring to posting
+									saveUniquePostsIds(posts[postIndex], config.channelName);
 									removeFile(filePath);
 								});
 							})
 							.catch(console.log);
 						// POSTING FOR CHANNELS WITH BOTH TYPES
 					} else {
+						// Save url to DB for checking in future and ignoring to posting
+						saveUniquePostsIds(posts[postIndex], config.channelName);
+
 						if (post.url.includes("redgifs") || post.url.includes(".gifv")) {
 							ctx.telegram.sendVideo(config.channelId, post.preview.reddit_video_preview.fallback_url, {
 								caption: text,
