@@ -17,7 +17,7 @@ const config = {
 	hasLink: false,
 	hasText: true,
 	//For video channels
-	videoOnly: false,
+	videoOnly: true,
 	nodeEnv: process.env.NODE_ENV,
 	//ADS schedule config
 	adsJobConfig: "0 6,13,19 * * *",
