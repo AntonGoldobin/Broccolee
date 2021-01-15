@@ -59,9 +59,9 @@ app.use(function(err, req, res, next) {
 	res.render("error");
 });
 
-pornhubBot.startPornhubBot();
+// pornhubBot.startPornhubBot();
 broccoleeBot.startBroccoleeBot();
-tikTokNudesBot.startTikTokNudesBot();
+// tikTokNudesBot.startTikTokNudesBot();
 hentaiBot.startHentaiBot();
 // spamBotJane.getAndReplyComment();
 
