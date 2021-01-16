@@ -263,9 +263,12 @@ const postBase = (config) => {
 						postingJob = null;
 						ctx.telegram.sendMessage(
 							config.notificationChannelId,
-							` **${config.nodeEnv}: ${config.channelName}** NEW ITERATION The posting schedule has been started`,
+							` **${config.nodeEnv}: ${config.channelName}** NEW ITERATION The posting schedule has been started after hour`,
 						);
-						startPosting(ctx, type);
+						// Rework after 1 hour
+						setTimeout(() => {
+							startPosting(ctx, type);
+						}, 1000 * 60 * 60);
 					}
 					postIndex++;
 				}),
