@@ -16,8 +16,7 @@ let options = new chrome.Options();
 options.addArguments("--headless");
 options.addArguments("--disable-gpu");
 options.addArguments("--no-sandbox");
-options.setChromeBinaryPath(process.env.CHROME_BINARY_PATH);
-let serviceBuilder = new chrome.ServiceBuilder(process.env.CHROME_DRIVER_PATH);
+options.addArguments("--disable-dev-shm-usage");
 
 const getRedgifsVideo = (url) => {
 	return new Promise(function(resolve, reject) {
