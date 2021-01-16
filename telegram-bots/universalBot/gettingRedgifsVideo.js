@@ -38,18 +38,15 @@ const getRedgifsVideo = (url) => {
 		// 		reject(error);
 		// 	});
 
-		let driver = new webdriver.Builder()
-			.forBrowser("chrome")
-			.setChromeOptions(options)
-			.setChromeService(serviceBuilder)
-			.build();
+		let driver = new webdriver.Builder().forBrowser("chrome").setChromeOptions(options).build();
 
 		driver.get(url);
 		driver
 			.wait(webdriver.until.elementLocated(webdriver.By.css("video source:first-child")), 20000)
 			.then((el) => {
-				console.log(el.getAttribute("src"));
-				driver.quit();
+				setTimeout(() => {
+					driver.quit();
+				}, 100);
 				resolve(el.getAttribute("src"));
 			})
 			.catch((err) => {
