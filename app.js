@@ -59,10 +59,10 @@ app.use(function(err, req, res, next) {
 	res.render("error");
 });
 
-// pornhubBot.startPornhubBot();
-// broccoleeBot.startBroccoleeBot();
+pornhubBot.startPornhubBot();
+broccoleeBot.startBroccoleeBot();
 tikTokNudesBot.startTikTokNudesBot();
-// hentaiBot.startHentaiBot();
+hentaiBot.startHentaiBot();
 // spamBotJane.getAndReplyComment();
 
 module.exports = app;
