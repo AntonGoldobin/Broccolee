@@ -38,6 +38,10 @@ const downloadFile = (url, path, callback) => {
 	});
 };
 
+const checkFileSize = (path, maxSize) => {
+	return fs.statSync(path).size / 1024 / 1024 < maxSize;
+};
+
 const removeFile = (path) => {
 	fs.unlink(path, (err) => {
 		if (err) {
@@ -48,7 +52,6 @@ const removeFile = (path) => {
 };
 
 const getFileExtension = (str) => {
-	console.log(str);
 	return str.slice(((str.lastIndexOf(".") - 1) >>> 0) + 2);
 };
 
@@ -58,3 +61,4 @@ exports.getCurrentTime = getCurrentTime;
 exports.downloadFile = downloadFile;
 exports.getFileExtension = getFileExtension;
 exports.removeFile = removeFile;
+exports.checkFileSize = checkFileSize;

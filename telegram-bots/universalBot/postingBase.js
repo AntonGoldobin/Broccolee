@@ -1,6 +1,13 @@
 const Telegraf = require("telegraf");
 const cron = require("node-cron");
-const { successfulConsoleLog, getCurrentTime, downloadFile, getFileExtension, removeFile } = require("./utils");
+const {
+	successfulConsoleLog,
+	getCurrentTime,
+	downloadFile,
+	getFileExtension,
+	removeFile,
+	checkFileSize,
+} = require("./utils");
 const { getRedgifsVideo } = require("./gettingRedgifsVideo");
 const gettingPosts = require("./gettingPosts");
 const path = require("path");
@@ -15,7 +22,7 @@ const postBase = (config) => {
 	// JOB CONFIG
 	// ****
 
-	const postingJobConfig = `*/${config.postingMin} * * * * *`;
+	const postingJobConfig = `${config.postingMin} * * * *`;
 
 	let postingJob = null;
 
@@ -53,6 +60,11 @@ const postBase = (config) => {
 				return false;
 			}
 			await next();
+		});
+
+		// Catching bot errors
+		bot.catch((err, ctx) => {
+			console.log(`TELEGRAF: Ooops, encountered an error for ${ctx.updateType}`, err);
 		});
 
 		// Create ADS schedule for current channel
@@ -165,10 +177,6 @@ const postBase = (config) => {
 				return uniqPosts;
 			})
 			.then((uniqPosts) => {
-				ctx.telegram.sendMessage(
-					config.notificationChannelId,
-					` **${config.nodeEnv}: ${config.channelName}** Всего постов в очереди: ${uniqPosts.length}`,
-				);
 				// Removing all non-video posts for schedule
 				if (config.videoOnly) {
 					const filteredVideos = uniqPosts.filter((post) => post.url.includes("redgifs"));
@@ -185,73 +193,82 @@ const postBase = (config) => {
 	// ****
 
 	const sendPostsToChannel = (posts, ctx, type) => {
+		ctx.telegram.sendMessage(
+			config.notificationChannelId,
+			` **${config.nodeEnv}: ${config.channelName}** Всего постов в очереди: ${posts.length}`,
+		);
+
 		if (posts.length == 0) return;
 		let postIndex = 0;
 
 		postingJob = cron.schedule(
 			postingJobConfig,
-			() => {
-				// Create description for the post
-				const post = posts[postIndex];
-				const link = config.hasLink ? `\n[link](https://www.reddit.com/${post.permalink})` : "";
-				const postTitle = post.title ? post.title : "";
-				const text = config.hasText ? postTitle + link : "";
-
-				// POSTING FOR CHANNELS WITH VIDEOS ONLY
-				if (config.videoOnly) {
-					const url = post.url_overridden_by_dest;
-
-					// Parsing web-page with video for getting video-url
-					getRedgifsVideo(url)
-						.then((redgifsUrl) => {
-							if (!redgifsUrl) return;
-							const fileName = `${config.channelName + Date.now()}.${getFileExtension(redgifsUrl)}`;
-							const filePath = `./telegram-bots/downloaded-files/${fileName}`;
-							const downloadedFilePath = path.join(__dirname, "../downloaded-files/", fileName);
-
-							downloadFile(redgifsUrl, filePath, () => {
-								ctx.telegram.sendVideo(config.channelId, {
-									source: downloadedFilePath,
-									caption: text,
-									parse_mode: "Markdown",
-								});
-
-								// Save url to DB for checking in future and ignoring to posting
-								saveUniquePostsIds(posts[postIndex], config.channelName);
-								removeFile(filePath);
-							});
-						})
-						.catch(console.log);
-					// POSTING FOR CHANNELS WITH BOTH TYPES
-				} else {
+			() =>
+				_.times(3, () => {
 					// Save url to DB for checking in future and ignoring to posting
 					saveUniquePostsIds(posts[postIndex], config.channelName);
 
-					if (post.url.includes("redgifs") || post.url.includes(".gifv")) {
-						ctx.telegram.sendVideo(config.channelId, post.preview.reddit_video_preview.fallback_url, {
-							caption: text,
-							parse_mode: "Markdown",
-						});
-					} else {
-						ctx.telegram.sendPhoto(config.channelId, post.url, {
-							caption: text,
-							parse_mode: "Markdown",
-						});
-					}
-				}
+					// Create description for the post
+					const post = posts[postIndex];
+					const link = config.hasLink ? `\n[link](https://www.reddit.com/${post.permalink})` : "";
+					const postTitle = post.title ? post.title : "";
+					const text = config.hasText ? postTitle + link : "";
 
-				// If this is the last item of posts array => start ALL again
-				if (!posts || postIndex + 1 === posts.length) {
-					postingJob.destroy();
-					postingJob = null;
-					ctx.telegram.sendMessage(
-						config.notificationChannelId,
-						` **${config.nodeEnv}: ${config.channelName}** NEW ITERATION The posting schedule has been started`,
-					);
-					startPosting(ctx, type);
-				}
-				postIndex++;
-			},
+					// POSTING FOR CHANNELS WITH VIDEOS ONLY
+					if (config.videoOnly) {
+						const url = post.url_overridden_by_dest;
+
+						// Parsing web-page with video for getting video-url
+						getRedgifsVideo(url)
+							.then((redgifsUrl) => {
+								if (!redgifsUrl) return;
+
+								// Variables for downloading video
+								const fileName = `${config.channelName + Date.now()}.${getFileExtension(redgifsUrl)}`;
+								const filePath = `./telegram-bots/downloaded-files/${fileName}`;
+								const downloadedFilePath = path.join(__dirname, "../downloaded-files/", fileName);
+
+								downloadFile(redgifsUrl, filePath, () => {
+									// Skip, if size bigger than limit (mB)
+									if (checkFileSize(filePath, 20)) {
+										ctx.telegram.sendVideo(config.channelId, {
+											source: downloadedFilePath,
+											caption: text,
+											parse_mode: "Markdown",
+										});
+									}
+
+									removeFile(filePath);
+								});
+							})
+							.catch(console.log);
+						// POSTING FOR CHANNELS WITH BOTH TYPES
+					} else {
+						if (post.url.includes("redgifs") || post.url.includes(".gifv")) {
+							ctx.telegram.sendVideo(config.channelId, post.preview.reddit_video_preview.fallback_url, {
+								caption: text,
+								parse_mode: "Markdown",
+							});
+						} else {
+							ctx.telegram.sendPhoto(config.channelId, post.url, {
+								caption: text,
+								parse_mode: "Markdown",
+							});
+						}
+					}
+
+					// If this is the last item of posts array => start ALL again
+					if (!posts || postIndex + 1 === posts.length) {
+						postingJob.destroy();
+						postingJob = null;
+						ctx.telegram.sendMessage(
+							config.notificationChannelId,
+							` **${config.nodeEnv}: ${config.channelName}** NEW ITERATION The posting schedule has been started`,
+						);
+						startPosting(ctx, type);
+					}
+					postIndex++;
+				}),
 			{
 				scheduled: true,
 			},
