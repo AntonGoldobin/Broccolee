@@ -60,9 +60,9 @@ app.use(function(err, req, res, next) {
 });
 
 // pornhubBot.startPornhubBot();
-broccoleeBot.startBroccoleeBot();
-// tikTokNudesBot.startTikTokNudesBot();
-hentaiBot.startHentaiBot();
+// broccoleeBot.startBroccoleeBot();
+tikTokNudesBot.startTikTokNudesBot();
+// hentaiBot.startHentaiBot();
 // spamBotJane.getAndReplyComment();
 
 module.exports = app;

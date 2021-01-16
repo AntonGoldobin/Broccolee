@@ -30,6 +30,7 @@
     "porno": "^1.0.4",
     "pug": "2.0.0-beta11",
     "redgif-dl": "^2.2.0",
+    "selenium-webdriver": "^4.0.0-alpha.8",
     "snoostorm": "^1.5.2",
     "snoowrap": "^1.21.0",
     "telegraf": "^3.38.0"

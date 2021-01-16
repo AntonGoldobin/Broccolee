@@ -15,7 +15,7 @@ const postBase = (config) => {
 	// JOB CONFIG
 	// ****
 
-	const postingJobConfig = `*/${config.postingMin} * * * *`;
+	const postingJobConfig = `*/${config.postingMin} * * * * *`;
 
 	let postingJob = null;
 
