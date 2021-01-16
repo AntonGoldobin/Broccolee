@@ -35,7 +35,7 @@ const getRedgifsVideo = (url) => {
 		// 		reject(error);
 		// 	});
 
-		// 	let driver = new webdriver.Builder().forBrowser("chrome").setChromeOptions(options).build();
+		let driver = new webdriver.Builder().forBrowser("chrome").setChromeOptions(options).build();
 
 		driver.get(url);
 		driver
