@@ -266,9 +266,7 @@ const postBase = (config) => {
 							` **${config.nodeEnv}: ${config.channelName}** NEW ITERATION The posting schedule has been started after hour`,
 						);
 						// Rework after 1 hour
-						setTimeout(() => {
-							startPosting(ctx, type);
-						}, 1000 * 60 * 60);
+						setTimeout(() => startPosting(ctx, type), 1000 * 60 * 60);
 					}
 					postIndex++;
 				}),
