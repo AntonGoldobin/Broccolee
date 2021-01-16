@@ -204,7 +204,7 @@ const postBase = (config) => {
 		postingJob = cron.schedule(
 			postingJobConfig,
 			() =>
-				_.times(3, () => {
+				_.times(config.postsCount, () => {
 					// Save url to DB for checking in future and ignoring to posting
 					saveUniquePostsIds(posts[postIndex], config.channelName);
 

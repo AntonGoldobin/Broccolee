@@ -10,6 +10,8 @@ const config = {
 	botToken: process.env.TIKTOK_NUDES_BOT_TOKEN,
 	postingMin: 56,
 	postLimit: 50,
+	//How many posts every postingMin
+	postsCount: 2,
 	snoowrapClientId: process.env.TIKTOK_NUDES_SNOOWRAP_CLIENT_ID,
 	snoowrapSecret: process.env.TIKTOK_NUDES_SNOOWRAP_CLIENT_SECRET,
 	snoowrapToken: process.env.TIKTOK_NUDES_SNOOWRAP_REFRESH_TOKEN,

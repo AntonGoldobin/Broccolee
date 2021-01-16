@@ -10,6 +10,8 @@ const config = {
 	botToken: process.env.BROCCOLEE_BOT_TOKEN,
 	postingMin: 55,
 	postLimit: 50,
+	//How many posts every postingMin
+	postsCount: 3,
 	snoowrapClientId: process.env.BROCCOLEE_SNOOWRAP_CLIENT_ID,
 	snoowrapSecret: process.env.BROCCOLEE_SNOOWRAP_CLIENT_SECRET,
 	snoowrapToken: process.env.BROCCOLEE_SNOOWRAP_REFRESH_TOKEN,

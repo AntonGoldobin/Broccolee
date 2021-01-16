@@ -10,6 +10,8 @@ const config = {
 	botToken: process.env.PORNHUB_BOT_TOKEN,
 	postingMin: 58,
 	postLimit: 50,
+	//How many posts every postingMin
+	postsCount: 2,
 	snoowrapClientId: process.env.PORNHUB_SNOOWRAP_CLIENT_ID,
 	snoowrapSecret: process.env.PORNHUB_SNOOWRAP_CLIENT_SECRET,
 	snoowrapToken: process.env.PORNHUB_SNOOWRAP_REFRESH_TOKEN,

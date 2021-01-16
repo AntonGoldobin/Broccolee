@@ -10,6 +10,8 @@ const config = {
 	botToken: process.env.HENTAI_BOT_TOKEN,
 	postingMin: 57,
 	postLimit: 50,
+	//How many posts every postingMin
+	postsCount: 3,
 	snoowrapClientId: process.env.HENTAI_SNOOWRAP_CLIENT_ID,
 	snoowrapSecret: process.env.HENTAI_SNOOWRAP_CLIENT_SECRET,
 	snoowrapToken: process.env.HENTAI_SNOOWRAP_REFRESH_TOKEN,
