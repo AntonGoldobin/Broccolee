@@ -2,6 +2,7 @@ const Nightmare = require("nightmare");
 
 const webdriver = require("selenium-webdriver");
 const chrome = require("selenium-webdriver/chrome");
+require("chromedriver");
 
 // Some options I set for all instances
 const nightmareOptions = {
@@ -15,6 +16,8 @@ let options = new chrome.Options();
 options.addArguments("--headless");
 options.addArguments("--disable-gpu");
 options.addArguments("--no-sandbox");
+options.setChromeBinaryPath(process.env.CHROME_BINARY_PATH);
+let serviceBuilder = new chrome.ServiceBuilder(process.env.CHROME_DRIVER_PATH);
 
 const getRedgifsVideo = (url) => {
 	return new Promise(function(resolve, reject) {
@@ -35,7 +38,11 @@ const getRedgifsVideo = (url) => {
 		// 		reject(error);
 		// 	});
 
-		let driver = new webdriver.Builder().forBrowser("chrome").setChromeOptions(options).build();
+		let driver = new webdriver.Builder()
+			.forBrowser("chrome")
+			.setChromeOptions(options)
+			.setChromeService(serviceBuilder)
+			.build();
 
 		driver.get(url);
 		driver

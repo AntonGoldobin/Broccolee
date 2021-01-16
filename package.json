@@ -11,6 +11,7 @@
     "@justalk/pornhub-api": "^3.4.0",
     "@rodrigogs/xvideos": "^1.1.2",
     "axios": "^0.21.0",
+    "chromedriver": "^87.0.5",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "dotenv": "^8.2.0",
