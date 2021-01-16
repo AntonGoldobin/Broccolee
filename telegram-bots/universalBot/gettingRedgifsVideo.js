@@ -43,8 +43,12 @@ const getRedgifsVideo = (url) => {
 			.then((el) => {
 				console.log(el.getAttribute("src"));
 				driver.quit();
+				resolve(el.getAttribute("src"));
 			})
-			.catch((err) => console.log("Selenium BROCCOLEE error: " + err));
+			.catch((err) => {
+				console.log("Selenium BROCCOLEE error: " + err);
+				reject(err);
+			});
 	});
 };
 
