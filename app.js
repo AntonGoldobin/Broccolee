@@ -7,10 +7,10 @@ const logger = require("morgan");
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 
-const broccoleeBot = require("./telegram-bots/broccolee-bot");
-const pornhubBot = require("./telegram-bots/pornhub-bot");
-const tikTokNudesBot = require("./telegram-bots/tiktok-nudes-bot");
-const hentaiBot = require("./telegram-bots/hentai-bot");
+const broccoleeBot = require("./telegram-bots/bots/broccolee-bot");
+const pornhubBot = require("./telegram-bots/bots/pornhub-bot");
+const tikTokNudesBot = require("./telegram-bots/bots/tiktok-nudes-bot");
+const hentaiBot = require("./telegram-bots/bots/hentai-bot");
 const spamBotJane = require("./spam-bots/jane-doel");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");

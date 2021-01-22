@@ -1,4 +1,4 @@
-const postingBase = require("./universalBot/postingBase");
+const postingBase = require("../universalBot/postingBase");
 const dotenv = require("dotenv");
 
 dotenv.config();

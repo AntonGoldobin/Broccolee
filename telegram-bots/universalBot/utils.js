@@ -1,6 +1,7 @@
 const logger = require("node-color-log");
 const request = require("request");
 var fs = require("fs");
+const channelsData = require("../bots/channelsInfo");
 
 // BEAUTIFUL LOGS
 
@@ -51,6 +52,14 @@ const removeFile = (path) => {
 	});
 };
 
+const getChannelsDescriptions = () => {
+	let message = "Hey! Look at our 18+ channels over there \n \n";
+	channelsData.forEach((channel) => {
+		message += `❤️  ${channel.linkMarkdown} - ${channel.description} \n \n`;
+	});
+	return message;
+};
+
 const getFileExtension = (str) => {
 	return str.slice(((str.lastIndexOf(".") - 1) >>> 0) + 2);
 };
@@ -62,3 +71,4 @@ exports.downloadFile = downloadFile;
 exports.getFileExtension = getFileExtension;
 exports.removeFile = removeFile;
 exports.checkFileSize = checkFileSize;
+exports.getChannelsDescriptions = getChannelsDescriptions;

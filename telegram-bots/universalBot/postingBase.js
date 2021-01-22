@@ -7,6 +7,7 @@ const {
 	getFileExtension,
 	removeFile,
 	checkFileSize,
+	getChannelsDescriptions,
 } = require("./utils");
 const { getRedgifsVideo } = require("./gettingRedgifsVideo");
 const gettingPosts = require("./gettingPosts");
@@ -80,7 +81,7 @@ const postBase = (config) => {
 				destroyJobs();
 				startPosting(ctx, "best");
 			} else {
-				ctx.reply("Я тебя не знаю, брат");
+				ctx.replyWithMarkdown(getChannelsDescriptions());
 			}
 		});
 
@@ -91,7 +92,7 @@ const postBase = (config) => {
 				destroyJobs();
 				startPosting(ctx, "top");
 			} else {
-				ctx.reply("Я тебя не знаю, брат");
+				ctx.replyWithMarkdown(getChannelsDescriptions());
 			}
 		});
 
@@ -104,7 +105,7 @@ const postBase = (config) => {
 					adsScheduleStop();
 				}
 			} else {
-				ctx.reply("Я тебя не знаю, брат");
+				ctx.replyWithMarkdown(getChannelsDescriptions());
 			}
 		});
 
@@ -117,7 +118,7 @@ const postBase = (config) => {
 					adsScheduleStart();
 				}
 			} else {
-				ctx.reply("Я тебя не знаю, брат");
+				ctx.replyWithMarkdown(getChannelsDescriptions());
 			}
 		});
 
@@ -126,7 +127,7 @@ const postBase = (config) => {
 				ctx.reply("Уничтожено!");
 				destroyJobs();
 			} else {
-				ctx.reply("Я тебя не знаю, брат");
+				ctx.replyWithMarkdown(getChannelsDescriptions());
 			}
 		});
 
@@ -135,7 +136,7 @@ const postBase = (config) => {
 				removeAllPostsIds(config.channelName);
 				ctx.reply(`База данных (${config.channelName}) подчищена! Надеюсь ты знаешь, что делаешь`);
 			} else {
-				ctx.reply("Я тебя не знаю, брат");
+				ctx.replyWithMarkdown(getChannelsDescriptions());
 			}
 		});
 
