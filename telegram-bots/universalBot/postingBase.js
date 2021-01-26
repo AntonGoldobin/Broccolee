@@ -1,23 +1,13 @@
 const Telegraf = require("telegraf");
 const cron = require("node-cron");
-const {
-	successfulConsoleLog,
-	getCurrentTime,
-	downloadFile,
-	getFileExtension,
-	removeFile,
-	checkFileSize,
-	getChannelsDescriptions,
-} = require("./utils");
-const { getRedgifsVideo } = require("./gettingRedgifsVideo");
+const { successfulConsoleLog, getCurrentTime, getChannelsDescriptions } = require("./utils");
 const gettingPosts = require("./gettingPosts");
-const path = require("path");
 const { saveUniquePostsIds } = require("./../db/models/savePostId");
 const { getPostsIds } = require("./../db/models/getPostsId");
 const { removeAllPostsIds } = require("./../db/models/removeAllPostIds");
 const _ = require("lodash");
 const { startChannelAds, adsScheduleStart, adsScheduleStop } = require("./channelsAds");
-const channelsData = require("../bots/channelsInfo");
+const { sendPost } = require("./sendPost");
 
 const postBase = (config) => {
 	// ****
@@ -210,64 +200,9 @@ const postBase = (config) => {
 					// Save url to DB for checking in future and ignoring to posting
 					saveUniquePostsIds(posts[postIndex], config.channelName);
 
-					// Create description for the post
 					const post = posts[postIndex];
-					const link = config.hasLink ? `\n[link](https://www.reddit.com/${post.permalink})` : "";
-					const postTitle = post.title ? post.title : "";
-					const inviteLink = `\n${channelsData.find((chanInfo) => chanInfo.name === config.channelName).linkMarkdown}`;
-					const text = config.hasText ? postTitle + link + inviteLink : "";
-
-					// POSTING FOR CHANNELS WITH VIDEOS ONLY
-					if (config.type === "videoOnly") {
-						const url = post.url_overridden_by_dest;
-
-						// Parsing web-page with video for getting video-url
-						getRedgifsVideo(url)
-							.then((redgifsUrl) => {
-								if (!redgifsUrl) return;
-
-								// Variables for downloading video
-								const fileName = `${config.channelName + Date.now()}.${getFileExtension(redgifsUrl)}`;
-								const filePath = `./telegram-bots/downloaded-files/${fileName}`;
-								const downloadedFilePath = path.join(__dirname, "../downloaded-files/", fileName);
-
-								downloadFile(redgifsUrl, filePath, () => {
-									// Skip, if size bigger than limit (mB)
-									if (checkFileSize(filePath, 20)) {
-										ctx.telegram.sendVideo(config.channelId, {
-											source: downloadedFilePath,
-											caption: text,
-											parse_mode: "Markdown",
-										});
-									}
-
-									removeFile(filePath);
-								});
-							})
-							.catch(console.log);
-						// POSTING FOR CHANNELS WITH BOTH TYPES
-					} else if (config.type === "text") {
-						const textStory = `*${post.title}* \n\n ${post.selftext} \n\n Author - #${post.author.name} ${inviteLink}`;
-
-						if (textStory.length < 4096) {
-							ctx.telegram.sendMessage(config.channelId, textStory, {
-								caption: text,
-								parse_mode: "Markdown",
-							});
-						}
-					} else {
-						if (post.url.includes("redgifs") || post.url.includes(".gifv")) {
-							ctx.telegram.sendVideo(config.channelId, post.preview.reddit_video_preview.fallback_url, {
-								caption: text,
-								parse_mode: "Markdown",
-							});
-						} else {
-							ctx.telegram.sendPhoto(config.channelId, post.url, {
-								caption: text,
-								parse_mode: "Markdown",
-							});
-						}
-					}
+					// Sending post's logic part
+					sendPost(post, config, ctx, type);
 
 					// If this is the last item of posts array => start ALL again
 					if (!posts || postIndex + 1 === posts.length) {

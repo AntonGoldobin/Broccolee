@@ -60,10 +60,10 @@ app.use(function(err, req, res, next) {
 	res.render("error");
 });
 
-// pornhubBot.startPornhubBot();
-// broccoleeBot.startBroccoleeBot();
-// tikTokNudesBot.startTikTokNudesBot();
-// hentaiBot.startHentaiBot();
+pornhubBot.startPornhubBot();
+broccoleeBot.startBroccoleeBot();
+tikTokNudesBot.startTikTokNudesBot();
+hentaiBot.startHentaiBot();
 sluttyStoriesBot.startSluttyStoriesBot();
 // spamBotJane.getAndReplyComment();
 
