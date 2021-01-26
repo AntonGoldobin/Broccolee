@@ -17,13 +17,14 @@ const { getPostsIds } = require("./../db/models/getPostsId");
 const { removeAllPostsIds } = require("./../db/models/removeAllPostIds");
 const _ = require("lodash");
 const { startChannelAds, adsScheduleStart, adsScheduleStop } = require("./channelsAds");
+const channelsData = require("../bots/channelsInfo");
 
 const postBase = (config) => {
 	// ****
 	// JOB CONFIG
 	// ****
 
-	const postingJobConfig = `${config.postingMin} * * * *`;
+	const postingJobConfig = config.postingMin;
 
 	let postingJob = null;
 
@@ -179,7 +180,7 @@ const postBase = (config) => {
 			})
 			.then((uniqPosts) => {
 				// Removing all non-video posts for schedule
-				if (config.videoOnly) {
+				if (config.type === "videoOnly") {
 					const filteredVideos = uniqPosts.filter((post) => post.url.includes("redgifs"));
 					sendPostsToChannel(filteredVideos, ctx, type);
 				} else {
@@ -213,10 +214,11 @@ const postBase = (config) => {
 					const post = posts[postIndex];
 					const link = config.hasLink ? `\n[link](https://www.reddit.com/${post.permalink})` : "";
 					const postTitle = post.title ? post.title : "";
-					const text = config.hasText ? postTitle + link : "";
+					const inviteLink = `\n${channelsData.find((chanInfo) => chanInfo.name === config.channelName).linkMarkdown}`;
+					const text = config.hasText ? postTitle + link + inviteLink : "";
 
 					// POSTING FOR CHANNELS WITH VIDEOS ONLY
-					if (config.videoOnly) {
+					if (config.type === "videoOnly") {
 						const url = post.url_overridden_by_dest;
 
 						// Parsing web-page with video for getting video-url
@@ -244,6 +246,15 @@ const postBase = (config) => {
 							})
 							.catch(console.log);
 						// POSTING FOR CHANNELS WITH BOTH TYPES
+					} else if (config.type === "text") {
+						const textStory = `*${post.title}* \n\n ${post.selftext} \n\n Author - #${post.author.name} ${inviteLink}`;
+
+						if (textStory.length < 4096) {
+							ctx.telegram.sendMessage(config.channelId, textStory, {
+								caption: text,
+								parse_mode: "Markdown",
+							});
+						}
 					} else {
 						if (post.url.includes("redgifs") || post.url.includes(".gifv")) {
 							ctx.telegram.sendVideo(config.channelId, post.preview.reddit_video_preview.fallback_url, {

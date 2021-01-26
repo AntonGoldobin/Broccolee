@@ -8,7 +8,7 @@ const config = {
 	channelId: process.env.BROCCOLEE_TG_CHANNEL,
 	notificationChannelId: process.env.NOTIFICATION_CHANNEL,
 	botToken: process.env.BROCCOLEE_BOT_TOKEN,
-	postingMin: 55,
+	postingMin: "55 * * * *",
 	postLimit: 50,
 	//How many posts every postingMin
 	postsCount: 3,
@@ -19,10 +19,10 @@ const config = {
 	hasLink: true,
 	hasText: true,
 	//For video channels
-	videoOnly: false,
+	type: "videoOnly",
 	nodeEnv: process.env.NODE_ENV,
 	//ADS schedule config
-	adsJobConfig: "0 9,15,21 * * *",
+	adsJobConfig: "0 9 * * *",
 };
 
 const startBroccoleeBot = () => {

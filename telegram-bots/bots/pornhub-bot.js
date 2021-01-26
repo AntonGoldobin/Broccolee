@@ -8,7 +8,7 @@ const config = {
 	channelId: process.env.PORNHUB_TG_CHANNEL,
 	notificationChannelId: process.env.NOTIFICATION_CHANNEL,
 	botToken: process.env.PORNHUB_BOT_TOKEN,
-	postingMin: 58,
+	postingMin: "58 * * * *",
 	postLimit: 50,
 	//How many posts every postingMin
 	postsCount: 2,
@@ -19,10 +19,10 @@ const config = {
 	hasLink: false,
 	hasText: true,
 	//For video channels
-	videoOnly: true,
+	type: "videoOnly",
 	nodeEnv: process.env.NODE_ENV,
 	//ADS schedule config
-	adsJobConfig: "0 6,13,19 * * *",
+	adsJobConfig: "0 19 * * *",
 };
 
 const startPornhubBot = () => {

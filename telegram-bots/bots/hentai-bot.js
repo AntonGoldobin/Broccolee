@@ -8,7 +8,7 @@ const config = {
 	channelId: process.env.HENTAI_TG_CHANNEL,
 	notificationChannelId: process.env.NOTIFICATION_CHANNEL,
 	botToken: process.env.HENTAI_BOT_TOKEN,
-	postingMin: 57,
+	postingMin: "57 * * * *",
 	postLimit: 50,
 	//How many posts every postingMin
 	postsCount: 3,
@@ -19,10 +19,10 @@ const config = {
 	hasLink: false,
 	hasText: true,
 	//For video channels
-	videoOnly: false,
+	type: "all",
 	nodeEnv: process.env.NODE_ENV,
 	//ADS schedule config
-	adsJobConfig: "0 7,13,19 * * *",
+	adsJobConfig: "0 13 * * *",
 };
 
 const startHentaiBot = () => {

@@ -2,34 +2,62 @@ const data = [
 	{
 		name: "broccolee",
 		channelForAds: "gonewild",
-		linkMarkdown: "[Broccolee](https://t.me/joinchat/SiRGWc-swRVpnsXI)",
+		link: "https://t.me/joinchat/SiRGWc-swRVpnsXI",
+		get linkMarkdown() {
+			return `[Broccolee](${this.link})`;
+		},
 		description: "cutest girls only",
-		descriptionWithLink:
-			"Describe to another our channel: \n \n ❤️ [Broccolee](https://t.me/joinchat/SiRGWc-swRVpnsXI) - cutest girls only",
+		get descriptionWithLink() {
+			return `Describe to another our channel: \n \n ❤️ ${this.linkMarkdown} - ${this.description}`;
+		},
 	},
 	{
 		name: "tiktok-nudes",
 		channelForAds: "TikTokNude",
-		linkMarkdown: "[TikTok Nudes](https://t.me/joinchat/RSAFCfi5qSNabbMB)",
+		link: "https://t.me/joinchat/RSAFCfi5qSNabbMB",
+		get linkMarkdown() {
+			return `[TikTok Nudes](${this.link})`;
+		},
 		description: "nsfw TikTok videos",
-		descriptionWithLink:
-			"Describe to another our channel: \n \n ❤️ [TikTok Nudes](https://t.me/joinchat/RSAFCfi5qSNabbMB) - nsfw TikTok videos",
+		get descriptionWithLink() {
+			return `Describe to another our channel: \n \n ❤️ ${this.linkMarkdown} - ${this.description}`;
+		},
 	},
 	{
 		name: "hentai",
 		channelForAds: "hentai",
-		linkMarkdown: "[Hentai](https://t.me/joinchat/V1kGMyMSx3c5ZRs6)",
+		link: "https://t.me/joinchat/V1kGMyMSx3c5ZRs6",
+		get linkMarkdown() {
+			return `[Hentai](${this.link})`;
+		},
 		description: "hentai arts and GIFs",
-		descriptionWithLink:
-			"Describe to another our channel: \n \n ❤️ [Hentai](https://t.me/joinchat/V1kGMyMSx3c5ZRs6) - hentai arts and GIFs",
+		get descriptionWithLink() {
+			return `Describe to another our channel: \n \n ❤️ ${this.linkMarkdown} - ${this.description}`;
+		},
 	},
 	{
 		name: "pornhub",
 		channelForAds: "porn_gifs",
-		linkMarkdown: "[Pornhub Videos](https://t.me/joinchat/Ss7it4saMZgcXYCX)",
+		link: "https://t.me/joinchat/Ss7it4saMZgcXYCX",
+		get linkMarkdown() {
+			return `[Pornhub Videos](${this.link})`;
+		},
 		description: "porn videos only",
-		descriptionWithLink:
-			"Describe to another our channel: \n \n ❤️ [Pornhub Videos](https://t.me/joinchat/Ss7it4saMZgcXYCX) - porn videos only",
+		get descriptionWithLink() {
+			return `Describe to another our channel: \n \n ❤️ ${this.linkMarkdown} - ${this.description}`;
+		},
+	},
+	{
+		name: "slutty-stories",
+		channelForAds: "boobs",
+		link: "https://t.me/joinchat/RDfM_S7FLanoIRYf",
+		get linkMarkdown() {
+			return `[Slutty Stories](${this.link})`;
+		},
+		description: "NSFW stories by people",
+		get descriptionWithLink() {
+			return `Describe to another our channel: \n \n ❤️ ${this.linkMarkdown} - ${this.description}`;
+		},
 	},
 ];
 

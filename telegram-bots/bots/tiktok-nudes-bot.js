@@ -8,7 +8,7 @@ const config = {
 	channelId: process.env.TIKTOK_NUDES_TG_CHANNEL,
 	notificationChannelId: process.env.NOTIFICATION_CHANNEL,
 	botToken: process.env.TIKTOK_NUDES_BOT_TOKEN,
-	postingMin: 56,
+	postingMin: "56 * * * *",
 	postLimit: 50,
 	//How many posts every postingMin
 	postsCount: 2,
@@ -19,10 +19,10 @@ const config = {
 	hasLink: false,
 	hasText: true,
 	//For video channels
-	videoOnly: true,
+	type: "videoOnly",
 	nodeEnv: process.env.NODE_ENV,
 	//ADS schedule config
-	adsJobConfig: "0 8,14,20 * * *",
+	adsJobConfig: "0 14 * * *",
 };
 
 const startTikTokNudesBot = () => {
