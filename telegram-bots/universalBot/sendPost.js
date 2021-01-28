@@ -2,6 +2,7 @@ const { downloadFile, getFileExtension, removeFile, checkFileSize } = require(".
 const { getRedgifsVideo } = require("./gettingRedgifsVideo");
 const channelsData = require("../bots/channelsInfo");
 const path = require("path");
+const translate = require("@iamtraction/google-translate");
 
 const sendPost = (post, config, ctx) => {
 	// Create description for the post
@@ -41,13 +42,36 @@ const sendPost = (post, config, ctx) => {
 			.catch(console.log);
 	} else if (config.type === "text") {
 		// POSTING TEXT POSTS
-		const textStory = `*${post.title}* \n\n ${post.selftext} \n\n Author - #${post.author.name} ${inviteLink}`;
 
-		if (textStory.length < 4096) {
-			ctx.telegram.sendMessage(config.channelId, textStory, {
-				caption: text,
-				parse_mode: "Markdown",
-			});
+		const sluttyStoriesLink = `\n${channelsData.find((chanInfo) => chanInfo.name === "slutty-stories").linkMarkdown}`;
+		// Translate title and then post description
+		if (config.translate) {
+			translate(post.title, { to: "ru" })
+				.then((resTitle) => {
+					translate(post.selftext, { to: "ru" })
+						.then((resDesc) => {
+							textStory = `*${resTitle.text}* \n\n ${resDesc.text} \n\n Author - #${post.author
+								.name} ${inviteLink} \n\n Переведено из ${sluttyStoriesLink}`;
+
+							if (textStory.length < 4096 && textStory.length > 500) {
+								ctx.telegram.sendMessage(config.channelId, textStory, {
+									caption: text,
+									parse_mode: "Markdown",
+								});
+							}
+						})
+						.catch((err) => console.log(err));
+				})
+				.catch((err) => console.log(err));
+		} else {
+			textStory = `*${post.title}* \n\n ${post.selftext} \n\n Author - #${post.author.name} \n ${inviteLink}`;
+
+			if (textStory.length < 4096 && textStory.length > 500) {
+				ctx.telegram.sendMessage(config.channelId, textStory, {
+					caption: text,
+					parse_mode: "Markdown",
+				});
+			}
 		}
 	} else {
 		// POSTING FOR CHANNELS WITH GIF AND IMG TYPES

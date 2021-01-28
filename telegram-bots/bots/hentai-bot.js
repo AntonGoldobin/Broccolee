@@ -18,6 +18,7 @@ const config = {
 	//Has the post description and linkpost description and link
 	hasLink: false,
 	hasText: true,
+	translate: false,
 	//For video channels
 	type: "all",
 	nodeEnv: process.env.NODE_ENV,

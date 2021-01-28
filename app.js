@@ -12,6 +12,7 @@ const pornhubBot = require("./telegram-bots/bots/pornhub-bot");
 const tikTokNudesBot = require("./telegram-bots/bots/tiktok-nudes-bot");
 const hentaiBot = require("./telegram-bots/bots/hentai-bot");
 const sluttyStoriesBot = require("./telegram-bots/bots/slutty-stories-bot");
+const startSluttyStoriesRusBot = require("./telegram-bots/bots/slutty-stories-rus-bot");
 const spamBotJane = require("./spam-bots/jane-doel");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
@@ -65,6 +66,7 @@ broccoleeBot.startBroccoleeBot();
 tikTokNudesBot.startTikTokNudesBot();
 hentaiBot.startHentaiBot();
 sluttyStoriesBot.startSluttyStoriesBot();
+startSluttyStoriesRusBot.startSluttyStoriesRusBot();
 // spamBotJane.getAndReplyComment();
 
 module.exports = app;

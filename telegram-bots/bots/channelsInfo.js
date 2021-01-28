@@ -59,6 +59,18 @@ const data = [
 			return `Describe to another our channel: \n \n ❤️ ${this.linkMarkdown} - ${this.description}`;
 		},
 	},
+	{
+		name: "slutty-stories-rus",
+		channelForAds: "nsfw",
+		link: "https://t.me/joinchat/WBKLl-_Kw-OgWGCb",
+		get linkMarkdown() {
+			return `[Пошлые истории](${this.link})`;
+		},
+		description: "Переведенные на русский истории из нашего канала Slutty Stories",
+		get descriptionWithLink() {
+			return `Describe to another our channel: \n \n ❤️ ${this.linkMarkdown} - ${this.description}`;
+		},
+	},
 ];
 
 module.exports = data;

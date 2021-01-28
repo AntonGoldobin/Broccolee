@@ -18,8 +18,9 @@ const config = {
 	//Has the post description and linkpost description and link
 	hasLink: true,
 	hasText: true,
+	translate: false,
 	//For video channels
-	type: "videoOnly",
+	type: "all",
 	nodeEnv: process.env.NODE_ENV,
 	//ADS schedule config
 	adsJobConfig: "0 9 * * *",
