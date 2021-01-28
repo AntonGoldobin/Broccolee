@@ -9,7 +9,7 @@
     "@aleengo/doggyx": "^1.2.1",
     "@heroku-cli/color": "^1.1.14",
     "@iamtraction/google-translate": "^1.1.2",
-    "axios": "^0.21.0",
+    "axios": "^0.21.1",
     "chromedriver": "^87.0.5",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
