@@ -51,7 +51,7 @@ const sendPost = (post, config, ctx) => {
 					translate(post.selftext, { to: "ru" })
 						.then((resDesc) => {
 							textStory = `*${resTitle.text}* \n\n ${resDesc.text} \n\n Author - #${post.author
-								.name} ${inviteLink} \n\n Переведено из ${sluttyStoriesLink}`;
+								.name} \n\n${inviteLink} \n\n Переведено из ${sluttyStoriesLink}`;
 
 							if (textStory.length < 4096 && textStory.length > 500) {
 								ctx.telegram.sendMessage(config.channelId, textStory, {
@@ -64,7 +64,7 @@ const sendPost = (post, config, ctx) => {
 				})
 				.catch((err) => console.log(err));
 		} else {
-			textStory = `*${post.title}* \n\n ${post.selftext} \n\n Author - #${post.author.name} \n ${inviteLink}`;
+			textStory = `*${post.title}* \n\n ${post.selftext} \n\n Author - #${post.author.name} \n\n${inviteLink}`;
 
 			if (textStory.length < 4096 && textStory.length > 500) {
 				ctx.telegram.sendMessage(config.channelId, textStory, {
