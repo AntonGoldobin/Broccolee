@@ -29,8 +29,10 @@ const postBase = (config) => {
 	});
 
 	const stopDailyPosting = cron.schedule("0 22 * * *", () => {
-		postingJob.stop();
-		//stoping ADS schedule
+		if (postingJob) {
+			postingJob.stop();
+			//stoping ADS schedule
+		}
 		adsScheduleStop();
 	});
 
