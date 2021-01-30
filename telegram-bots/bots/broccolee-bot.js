@@ -16,7 +16,7 @@ const config = {
 	snoowrapSecret: process.env.BROCCOLEE_SNOOWRAP_CLIENT_SECRET,
 	snoowrapToken: process.env.BROCCOLEE_SNOOWRAP_REFRESH_TOKEN,
 	//Has the post description and linkpost description and link
-	hasLink: true,
+	hasLink: false,
 	hasText: true,
 	translate: false,
 	//For video channels

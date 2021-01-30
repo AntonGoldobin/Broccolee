@@ -8,7 +8,7 @@ const config = {
 	channelId: process.env.SLUTTY_STORIES_TG_CHANNEL,
 	notificationChannelId: process.env.NOTIFICATION_CHANNEL,
 	botToken: process.env.SLUTTY_STORIES_BOT_TOKEN,
-	postingMin: "*/20 * * * * *",
+	postingMin: "10 * * * *",
 	postLimit: 15,
 	//How many posts every postingMin
 	postsCount: 1,
