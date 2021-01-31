@@ -8,7 +8,7 @@ const config = {
 	channelId: process.env.AVOCADO_TG_CHANNEL,
 	notificationChannelId: process.env.NOTIFICATION_CHANNEL,
 	botToken: process.env.AVOCADO_BOT_TOKEN,
-	postingMin: "30 * * * *",
+	postingMin: "30 * * * * *",
 	postLimit: 30,
 	//How many posts every postingMin
 	postsCount: 2,
