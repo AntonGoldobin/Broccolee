@@ -4,17 +4,17 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const config = {
-	channelName: "pornhub",
-	channelId: process.env.PORNHUB_TG_CHANNEL,
+	channelName: "avocado",
+	channelId: process.env.AVOCADO_TG_CHANNEL,
 	notificationChannelId: process.env.NOTIFICATION_CHANNEL,
-	botToken: process.env.PORNHUB_BOT_TOKEN,
-	postingMin: "58 * * * *",
-	postLimit: 50,
+	botToken: process.env.AVOCADO_BOT_TOKEN,
+	postingMin: "30 * * * *",
+	postLimit: 30,
 	//How many posts every postingMin
 	postsCount: 2,
-	snoowrapClientId: process.env.PORNHUB_SNOOWRAP_CLIENT_ID,
-	snoowrapSecret: process.env.PORNHUB_SNOOWRAP_CLIENT_SECRET,
-	snoowrapToken: process.env.PORNHUB_SNOOWRAP_REFRESH_TOKEN,
+	snoowrapClientId: process.env.AVOCADO_SNOOWRAP_CLIENT_ID,
+	snoowrapSecret: process.env.AVOCADO_SNOOWRAP_CLIENT_SECRET,
+	snoowrapToken: process.env.AVOCADO_SNOOWRAP_REFRESH_TOKEN,
 	//Has the post description and linkpost description and link
 	hasLink: false,
 	hasText: true,
@@ -23,12 +23,12 @@ const config = {
 	type: "videoOnly",
 	nodeEnv: process.env.NODE_ENV,
 	//ADS schedule config
-	adsJobConfig: "0 19 * * *",
-	isAdult: true,
+	adsJobConfig: "0 12 * * *",
+	isAdult: false,
 };
 
-const startPornhubBot = () => {
+const startAvocadoBot = () => {
 	postingBase.postBase(config);
 };
 
-module.exports.startPornhubBot = startPornhubBot;
+module.exports.startAvocadoBot = startAvocadoBot;

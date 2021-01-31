@@ -173,7 +173,9 @@ const postBase = (config) => {
 			.then((uniqPosts) => {
 				// Removing all non-video posts for schedule
 				if (config.type === "videoOnly") {
-					const filteredVideos = uniqPosts.filter((post) => post.url.includes("redgifs"));
+					const filteredVideos = uniqPosts.filter(
+						(post) => post.url.includes("redgifs") || post.url.includes("v.redd.it"),
+					);
 					sendPostsToChannel(filteredVideos, ctx, type);
 				} else {
 					sendPostsToChannel(uniqPosts, ctx, type);

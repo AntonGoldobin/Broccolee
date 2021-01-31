@@ -24,6 +24,7 @@ const config = {
 	nodeEnv: process.env.NODE_ENV,
 	//ADS schedule config
 	adsJobConfig: "0 14 * * *",
+	isAdult: true,
 };
 
 const startTikTokNudesBot = () => {

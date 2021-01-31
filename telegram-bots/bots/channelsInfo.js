@@ -4,7 +4,7 @@ const data = [
 		channelForAds: "gonewild",
 		link: "https://t.me/joinchat/SiRGWc-swRVpnsXI",
 		get linkMarkdown() {
-			return `[Broccolee](${this.link})`;
+			return `[Broccolee🥦](${this.link})`;
 		},
 		description: "cutest girls only",
 		get descriptionWithLink() {
@@ -16,7 +16,7 @@ const data = [
 		channelForAds: "TikTokNude",
 		link: "https://t.me/joinchat/RSAFCfi5qSNabbMB",
 		get linkMarkdown() {
-			return `[TikTok Nudes](${this.link})`;
+			return `[TikTok Nudes💞](${this.link})`;
 		},
 		description: "nsfw TikTok videos",
 		get descriptionWithLink() {
@@ -28,7 +28,7 @@ const data = [
 		channelForAds: "hentai",
 		link: "https://t.me/joinchat/V1kGMyMSx3c5ZRs6",
 		get linkMarkdown() {
-			return `[Hentai](${this.link})`;
+			return `[Hentai💚](${this.link})`;
 		},
 		description: "hentai arts and GIFs",
 		get descriptionWithLink() {
@@ -40,7 +40,7 @@ const data = [
 		channelForAds: "porn_gifs",
 		link: "https://t.me/joinchat/Ss7it4saMZgcXYCX",
 		get linkMarkdown() {
-			return `[Pornhub Videos](${this.link})`;
+			return `[Pornhub Videos💓](${this.link})`;
 		},
 		description: "porn videos only",
 		get descriptionWithLink() {
@@ -67,6 +67,18 @@ const data = [
 			return `[Пошлые истории](${this.link})`;
 		},
 		description: "Переведенные на русский истории из нашего канала Slutty Stories",
+		get descriptionWithLink() {
+			return `Describe to another our channel: \n \n ❤️ ${this.linkMarkdown} - ${this.description}`;
+		},
+	},
+	{
+		name: "avocado",
+		channelForAds: "perfectlycutscreams",
+		link: "https://t.me/comicalAvocado",
+		get linkMarkdown() {
+			return `[Avocado🥑](${this.link})`;
+		},
+		description: "Funny videos",
 		get descriptionWithLink() {
 			return `Describe to another our channel: \n \n ❤️ ${this.linkMarkdown} - ${this.description}`;
 		},

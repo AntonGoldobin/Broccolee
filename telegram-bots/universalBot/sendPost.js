@@ -1,45 +1,71 @@
-const { downloadFile, getFileExtension, removeFile, checkFileSize } = require("./utils");
+const { downloadFile, removeFile, checkFileSize } = require("./utils");
 const { getRedgifsVideo } = require("./gettingRedgifsVideo");
 const channelsData = require("../bots/channelsInfo");
 const path = require("path");
 const translate = require("@iamtraction/google-translate");
+const { default: axios } = require("axios");
+const _ = require("lodash");
 
 const sendPost = (post, config, ctx) => {
 	// Create description for the post
 
 	const link = config.hasLink ? `\n[link](https://www.reddit.com/${post.permalink})` : "";
-	const postTitle = post.title ? post.title : "";
+	const postTitle = _.get(post, "title") ? post.title : "";
 	const inviteLink = `\n${channelsData.find((chanInfo) => chanInfo.name === config.channelName).linkMarkdown}`;
 	const text = config.hasText ? postTitle + link + inviteLink : "";
 
 	// POSTING FOR CHANNELS WITH VIDEOS ONLY
 	if (config.type === "videoOnly") {
-		const url = post.url_overridden_by_dest;
+		if (config.isAdult) {
+			const url = post.url_overridden_by_dest;
+			// Parsing web-page with video for getting video-url
+			getRedgifsVideo(url)
+				.then((redgifsUrl) => {
+					if (!redgifsUrl) return;
 
-		// Parsing web-page with video for getting video-url
-		getRedgifsVideo(url)
-			.then((redgifsUrl) => {
-				if (!redgifsUrl) return;
+					// Variables for downloading video
+					const videoNames = getVideoNames(post);
 
-				// Variables for downloading video
-				const fileName = `${config.channelName + Date.now()}.${getFileExtension(redgifsUrl)}`;
-				const filePath = `./telegram-bots/downloaded-files/${fileName}`;
-				const downloadedFilePath = path.join(__dirname, "../downloaded-files/", fileName);
+					downloadFile(redgifsUrl, videoNames.filePath, () => {
+						// Skip, if size bigger than limit (mB)
+						if (checkFileSize(videoNames.filePath, 15)) {
+							ctx.telegram.sendVideo(
+								config.channelId,
+								{
+									source: videoNames.downloadedFilePath,
+								},
+								{
+									caption: `${text}`,
+									parse_mode: "Markdown",
+								},
+							);
+							removeFile(videoNames.filePath);
+						}
+					});
+				})
+				.catch(console.log);
+		} else {
+			const videoNames = getVideoNames(post);
 
-				downloadFile(redgifsUrl, filePath, () => {
+			axios.get("https://vred.rip/api/vreddit/" + videoNames.videoId).then((res) => {
+				downloadFile(res.data.source, videoNames.filePath, () => {
 					// Skip, if size bigger than limit (mB)
-					if (checkFileSize(filePath, 20)) {
-						ctx.telegram.sendVideo(config.channelId, {
-							source: downloadedFilePath,
-							caption: text,
-							parse_mode: "Markdown",
-						});
+					if (checkFileSize(videoNames.filePath, 15)) {
+						ctx.telegram.sendVideo(
+							config.channelId,
+							{
+								source: videoNames.downloadedFilePath,
+							},
+							{
+								caption: `${text}`,
+								parse_mode: "Markdown",
+							},
+						);
+						removeFile(videoNames.filePath);
 					}
-
-					removeFile(filePath);
 				});
-			})
-			.catch(console.log);
+			});
+		}
 	} else if (config.type === "text") {
 		// POSTING TEXT POSTS
 
@@ -87,6 +113,21 @@ const sendPost = (post, config, ctx) => {
 			});
 		}
 	}
+};
+
+const getVideoNames = (post) => {
+	const splitedVideoUrl = post.url.split("/");
+	const videoId = splitedVideoUrl[splitedVideoUrl.length - 1];
+
+	const fileName = `${videoId}.mp4`;
+	const filePath = `./telegram-bots/downloaded-files/${fileName}`;
+	const downloadedFilePath = path.join(__dirname, "../downloaded-files/", fileName);
+
+	return {
+		videoId: videoId,
+		filePath: filePath,
+		downloadedFilePath: downloadedFilePath,
+	};
 };
 
 module.exports.sendPost = sendPost;

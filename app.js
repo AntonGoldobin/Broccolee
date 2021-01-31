@@ -8,6 +8,7 @@ const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 
 const broccoleeBot = require("./telegram-bots/bots/broccolee-bot");
+const avocadoBot = require("./telegram-bots/bots/avocado-bot");
 const pornhubBot = require("./telegram-bots/bots/pornhub-bot");
 const tikTokNudesBot = require("./telegram-bots/bots/tiktok-nudes-bot");
 const hentaiBot = require("./telegram-bots/bots/hentai-bot");
@@ -67,6 +68,7 @@ tikTokNudesBot.startTikTokNudesBot();
 hentaiBot.startHentaiBot();
 sluttyStoriesBot.startSluttyStoriesBot();
 startSluttyStoriesRusBot.startSluttyStoriesRusBot();
+avocadoBot.startAvocadoBot();
 // spamBotJane.getAndReplyComment();
 
 module.exports = app;

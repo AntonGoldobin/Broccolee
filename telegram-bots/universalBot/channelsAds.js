@@ -3,11 +3,24 @@ const _ = require("lodash");
 const axios = require("axios");
 const channelsData = require("../bots/channelsInfo");
 
+// CHANNELS THAT WILL NOT BE ADDED TO ADS
+const exceptChannels = {
+	broccolee: "",
+	"tiktok-nudes": "",
+	hentai: "",
+	pornhub: "",
+	broccolee: "",
+};
+
 let postingJob = null;
 
 const startChannelAds = (config, ctx) => {
+	const filteredChannelsData = channelsData.filter(
+		(channel) => !exceptChannels.hasOwnProperty(channel.name) && channel.name !== config.channelName,
+	);
+
 	postingJob = cron.schedule(config.adsJobConfig, () => {
-		const channel = _.sample(channelsData.filter((chan) => chan.name !== config.channelName));
+		const channel = _.sample(filteredChannelsData);
 
 		axios.get(`https://reddit.com/r/${channel.channelForAds}/top.json?limit=1`).then((res) => {
 			// data recieved from Reddit

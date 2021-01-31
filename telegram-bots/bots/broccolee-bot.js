@@ -11,7 +11,7 @@ const config = {
 	postingMin: "55 * * * *",
 	postLimit: 50,
 	//How many posts every postingMin
-	postsCount: 3,
+	postsCount: 2,
 	snoowrapClientId: process.env.BROCCOLEE_SNOOWRAP_CLIENT_ID,
 	snoowrapSecret: process.env.BROCCOLEE_SNOOWRAP_CLIENT_SECRET,
 	snoowrapToken: process.env.BROCCOLEE_SNOOWRAP_REFRESH_TOKEN,
@@ -23,7 +23,8 @@ const config = {
 	type: "all",
 	nodeEnv: process.env.NODE_ENV,
 	//ADS schedule config
-	adsJobConfig: "0 9 * * *",
+	adsJobConfig: "0 12,23 * * *",
+	isAdult: true,
 };
 
 const startBroccoleeBot = () => {
