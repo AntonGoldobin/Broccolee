@@ -24,7 +24,6 @@ const config = {
 	nodeEnv: process.env.NODE_ENV,
 	//ADS schedule config
 	adsJobConfig: "0 23 * * *",
-	isAdult: true,
 };
 
 const startPornhubBot = () => {

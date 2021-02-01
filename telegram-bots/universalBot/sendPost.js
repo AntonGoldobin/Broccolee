@@ -5,8 +5,12 @@ const path = require("path");
 const translate = require("@iamtraction/google-translate");
 const { default: axios } = require("axios");
 const _ = require("lodash");
+const { saveUniquePostsIds } = require("./../db/models/savePostId");
 
 const sendPost = (post, config, ctx) => {
+	// Save url to DB for checking in future and ignoring to posting
+	saveUniquePostsIds(post, config.channelName);
+
 	// Create description for the post
 
 	const link = config.hasLink ? `\n[link](https://www.reddit.com/${post.permalink})` : "";
@@ -16,9 +20,9 @@ const sendPost = (post, config, ctx) => {
 
 	// POSTING FOR CHANNELS WITH VIDEOS ONLY
 	if (config.type === "videoOnly") {
-		if (config.isAdult) {
+		if (post.url.includes("redgifs")) {
 			postAdultVideo(post, ctx, text, config.channelId);
-		} else {
+		} else if (post.url.includes("v.redd.it")) {
 			postVideo(post, ctx, text, config.channelId);
 		}
 	} else if (config.type === "text") {
@@ -76,7 +80,6 @@ const postVideo = (post, ctx, text, channelId) => {
 	axios
 		.get("https://vred.rip/api/vreddit/" + videoNames.videoId)
 		.then((res) => {
-			console.log(res.data.source);
 			downloadFile(res.data.source, videoNames.filePath, () => {
 				// Skip, if size bigger than limit (mB)
 				if (checkFileSize(videoNames.filePath, 15)) {
@@ -94,7 +97,7 @@ const postVideo = (post, ctx, text, channelId) => {
 				}
 			});
 		})
-		.catch((err) => console.log(err));
+		.catch((err) => console.log(config.channelName + " Vreddit Video Error: " + err.response.data));
 };
 
 const postAdultVideo = (post, ctx, text, channelId) => {
@@ -106,7 +109,6 @@ const postAdultVideo = (post, ctx, text, channelId) => {
 
 			// Variables for downloading video
 			const videoNames = getVideoNames(post);
-
 			downloadFile(redgifsUrl, videoNames.filePath, () => {
 				// Skip, if size bigger than limit (mB)
 				if (checkFileSize(videoNames.filePath, 15)) {

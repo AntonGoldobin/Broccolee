@@ -2,7 +2,6 @@ const Telegraf = require("telegraf");
 const cron = require("node-cron");
 const { successfulConsoleLog, getCurrentTime, getChannelsDescriptions } = require("./utils");
 const gettingPosts = require("./gettingPosts");
-const { saveUniquePostsIds } = require("./../db/models/savePostId");
 const { getPostsIds } = require("./../db/models/getPostsId");
 const { removeAllPostsIds } = require("./../db/models/removeAllPostIds");
 const _ = require("lodash");
@@ -209,24 +208,23 @@ const postBase = (config) => {
 
 		if (posts.length == 0) return;
 		let postIndex = 0;
+		const delayBetweenPost = 10000;
 
 		postingJob = cron.schedule(
 			postingJobConfig,
-			() =>
-				_.times(config.postsCount, () => {
-					// Save url to DB for checking in future and ignoring to posting
-					saveUniquePostsIds(posts[postIndex], config.channelName);
-
+			() => {
+				for (let i = 0; i < config.postsCount && postIndex < posts.length; i++) {
 					const post = posts[postIndex];
 					// Sending post's logic part
-					sendPost(post, config, ctx, type);
+					_.delay(sendPost, i * delayBetweenPost, post, config, ctx, type);
 
 					// If this is the last item of posts array => start ALL again
-					if (!posts || postIndex + 1 === posts.length) {
-						destroyJobs();
-					}
 					postIndex++;
-				}),
+				}
+				if (posts.length === 0 || postIndex + 1 === posts.length) {
+					destroyJobs();
+				}
+			},
 			{
 				scheduled: true,
 			},

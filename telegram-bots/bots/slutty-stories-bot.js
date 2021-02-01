@@ -24,7 +24,6 @@ const config = {
 	nodeEnv: process.env.NODE_ENV,
 	//ADS schedule config
 	adsJobConfig: "0 9 * * *",
-	isAdult: true,
 };
 
 const startSluttyStoriesBot = () => {

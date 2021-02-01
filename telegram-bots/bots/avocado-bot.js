@@ -9,9 +9,9 @@ const config = {
 	notificationChannelId: process.env.NOTIFICATION_CHANNEL,
 	botToken: process.env.AVOCADO_BOT_TOKEN,
 	postingMin: "32 * * * *",
-	postLimit: 35,
+	postLimit: 50,
 	//How many posts every postingMin
-	postsCount: 2,
+	postsCount: 3,
 	snoowrapClientId: process.env.AVOCADO_SNOOWRAP_CLIENT_ID,
 	snoowrapSecret: process.env.AVOCADO_SNOOWRAP_CLIENT_SECRET,
 	snoowrapToken: process.env.AVOCADO_SNOOWRAP_REFRESH_TOKEN,
@@ -24,7 +24,6 @@ const config = {
 	nodeEnv: process.env.NODE_ENV,
 	//ADS schedule config
 	adsJobConfig: "0 23 * * *",
-	isAdult: false,
 };
 
 const startAvocadoBot = () => {
