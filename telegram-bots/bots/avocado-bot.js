@@ -8,8 +8,8 @@ const config = {
 	channelId: process.env.AVOCADO_TG_CHANNEL,
 	notificationChannelId: process.env.NOTIFICATION_CHANNEL,
 	botToken: process.env.AVOCADO_BOT_TOKEN,
-	postingMin: "30 * * * * *",
-	postLimit: 30,
+	postingMin: "32 * * * *",
+	postLimit: 35,
 	//How many posts every postingMin
 	postsCount: 2,
 	snoowrapClientId: process.env.AVOCADO_SNOOWRAP_CLIENT_ID,
@@ -23,7 +23,7 @@ const config = {
 	type: "videoOnly",
 	nodeEnv: process.env.NODE_ENV,
 	//ADS schedule config
-	adsJobConfig: "0 12 * * *",
+	adsJobConfig: "0 23 * * *",
 	isAdult: false,
 };
 

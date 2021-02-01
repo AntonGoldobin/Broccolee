@@ -19,34 +19,38 @@ const postBase = (config) => {
 	let postingJob = null;
 
 	// ****
-	// STARTING/STOPING DAILY POSTING SCHEDULES
-	// ****
-
-	const startDailyPosting = cron.schedule("0 7 * * *", () => {
-		postingJob.start();
-		//starting ADS schedule
-		adsScheduleStart();
-	});
-
-	const stopDailyPosting = cron.schedule("0 22 * * *", () => {
-		if (postingJob) {
-			postingJob.stop();
-			//stoping ADS schedule
-		}
-		adsScheduleStop();
-	});
-
-	// Starting at morning
-	startDailyPosting.start();
-	// Stoping at night
-	stopDailyPosting.start();
-
-	// ****
 	// CREATING THE BOT AND CHECK COMMANDS
 	// ****
 
 	function startBot() {
 		const bot = new Telegraf(config.botToken);
+
+		// ****
+		// STARTING/STOPING DAILY POSTING SCHEDULES
+		// ****
+
+		const startDailyPosting = cron.schedule("0 7 * * *", () => {
+			if (postingJob) {
+				// Create ADS schedule for current channel
+				startChannelAds(config, bot);
+
+				// Starting posting
+				startPosting(bot, "top");
+			}
+		});
+
+		const stopDailyPosting = cron.schedule("0 22 * * *", () => {
+			if (postingJob) {
+				postingJob.stop();
+				//stoping ADS schedule
+			}
+			adsScheduleStop();
+		});
+
+		// Starting at morning
+		startDailyPosting.start();
+		// Stoping at night
+		stopDailyPosting.start();
 
 		// Clearing offline commands by bot (IMPORTANT)
 		bot.use(async (ctx, next) => {
@@ -142,6 +146,15 @@ const postBase = (config) => {
 
 	const startPosting = (ctx, type) => {
 		destroyJobs();
+
+		// STOP POSTING AT NIGHT
+		const currentDate = new Date();
+		const currentTimeHours = currentDate.getHours();
+		if (currentTimeHours > 22 || currentTimeHours < 7) {
+			ctx.telegram.sendMessage(config.notificationChannelId, "The schedule WAS NOT started (this is night) ");
+			successfulConsoleLog("The schedule NOT started (this is night): " + getCurrentTime());
+			return;
+		}
 
 		successfulConsoleLog("The schedule will be started soon: " + getCurrentTime());
 		getRedditPosts(ctx, type);

@@ -23,7 +23,7 @@ const config = {
 	type: "videoOnly",
 	nodeEnv: process.env.NODE_ENV,
 	//ADS schedule config
-	adsJobConfig: "0 19 * * *",
+	adsJobConfig: "0 23 * * *",
 	isAdult: true,
 };
 

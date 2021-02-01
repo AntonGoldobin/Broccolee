@@ -23,7 +23,7 @@ const config = {
 	type: "all",
 	nodeEnv: process.env.NODE_ENV,
 	//ADS schedule config
-	adsJobConfig: "0 13 * * *",
+	adsJobConfig: "0 0 * * *",
 	isAdult: true,
 };
 
