@@ -15,7 +15,9 @@ const sendPost = (post, config, ctx) => {
 
 	const link = config.hasLink ? `\n[link](https://www.reddit.com/${post.permalink})` : "";
 	const postTitle = _.get(post, "title") ? post.title : "";
-	const inviteLink = `\n${channelsData.find((chanInfo) => chanInfo.name === config.channelName).linkMarkdown}`;
+	const inviteLink = config.hasInviteLink
+		? `\n${channelsData.find((chanInfo) => chanInfo.name === config.channelName).linkMarkdown}`
+		: "";
 	const text = config.hasText ? postTitle + link + inviteLink : "";
 
 	// POSTING FOR CHANNELS WITH VIDEOS ONLY

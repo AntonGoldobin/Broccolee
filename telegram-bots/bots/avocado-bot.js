@@ -18,6 +18,7 @@ const config = {
 	//Has the post description and linkpost description and link
 	hasLink: false,
 	hasText: true,
+	hasInviteLink: false,
 	translate: false,
 	//For video channels
 	type: "videoOnly",
