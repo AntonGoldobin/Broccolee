@@ -16,6 +16,8 @@ const postBase = (config) => {
 	const postingJobConfig = config.postingMin;
 
 	let postingJob = null;
+	let startDailyPosting = null;
+	let stopDailyPosting = null;
 
 	// ****
 	// CREATING THE BOT AND CHECK COMMANDS
@@ -28,7 +30,7 @@ const postBase = (config) => {
 		// STARTING/STOPING DAILY POSTING SCHEDULES
 		// ****
 
-		const startDailyPosting = cron.schedule("0 7 * * *", () => {
+		startDailyPosting = cron.schedule("0 7 * * *", () => {
 			if (postingJob) {
 				// Create ADS schedule for current channel
 				startChannelAds(config, bot);
@@ -38,18 +40,13 @@ const postBase = (config) => {
 			}
 		});
 
-		const stopDailyPosting = cron.schedule("0 22 * * *", () => {
+		stopDailyPosting = cron.schedule("0 22 * * *", () => {
 			if (postingJob) {
 				postingJob.stop();
 				//stoping ADS schedule
 			}
 			adsScheduleStop();
 		});
-
-		// Starting at morning
-		startDailyPosting.start();
-		// Stoping at night
-		stopDailyPosting.start();
 
 		// Clearing offline commands by bot (IMPORTANT)
 		bot.use(async (ctx, next) => {
