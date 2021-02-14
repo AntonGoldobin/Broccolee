@@ -7,12 +7,13 @@ dotenv.config();
 
 let mapSchedule = null;
 
+const client = new Instagram({ username: process.env.IG_FS_USERNAME, password: process.env.IG_FS_PASSWORD });
+
 const dailySchedule = cron.schedule("0 7 * * *", () => {
 	start();
 });
 
 const start = () => {
-	const client = new Instagram({ username: process.env.IG_FS_USERNAME, password: process.env.IG_FS_PASSWORD });
 	client.login().then(() => {
 		likeOrSubscribe(client, "dog", "subscribe");
 		likeOrSubscribe(client, "lol", "like");
@@ -23,7 +24,6 @@ const likeOrSubscribe = (client, tag, type) => {
 	client.getMediaFeedByHashtag({ hashtag: tag }).then((data) => {
 		let index = 0;
 		const posts = data.edge_hashtag_to_top_posts.edges;
-		console.log(data.edge_hashtag_to_top_posts.edges[0]);
 		mapSchedule = cron.schedule("0 * * * *", () => {
 			_.delay(
 				() => {

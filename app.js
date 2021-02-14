@@ -15,7 +15,7 @@ const hentaiBot = require("./telegram-bots/bots/hentai-bot");
 const sluttyStoriesBot = require("./telegram-bots/bots/slutty-stories-bot");
 const startSluttyStoriesRusBot = require("./telegram-bots/bots/slutty-stories-rus-bot");
 const spamBotJane = require("./spam-bots/jane-doel");
-const instaSubscribes = require("./instagram-bots/funny-screams");
+const instaSubscribes = require("./instagram-bots/funny-screams/funny-screams-likes");
 
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
