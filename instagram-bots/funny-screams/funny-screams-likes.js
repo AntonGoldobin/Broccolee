@@ -1,0 +1,60 @@
+const Instagram = require("instagram-web-api");
+const cron = require("node-cron");
+const _ = require("lodash");
+const dotenv = require("dotenv");
+
+dotenv.config();
+
+let mapSchedule = null;
+
+const dailySchedule = cron.schedule("0 7 * * *", () => {
+	start();
+});
+
+const start = () => {
+	const client = new Instagram({ username: process.env.IG_FS_USERNAME, password: process.env.IG_FS_PASSWORD });
+	client.login().then(() => {
+		likeOrSubscribe(client, "dog", "subscribe");
+		likeOrSubscribe(client, "lol", "like");
+	});
+};
+
+const likeOrSubscribe = (client, tag, type) => {
+	client.getMediaFeedByHashtag({ hashtag: tag }).then((data) => {
+		let index = 0;
+		const posts = data.edge_hashtag_to_top_posts.edges;
+		console.log(data.edge_hashtag_to_top_posts.edges[0]);
+		mapSchedule = cron.schedule("0 * * * *", () => {
+			_.delay(
+				() => {
+					if (index < posts.length) {
+						if (type === "like") {
+							client.like({ mediaId: posts[index].node.id });
+						} else if (type === "subscribe") {
+							client.follow({ mediaId: posts[index].node.owner.id });
+						}
+						index++;
+					} else {
+						destroyJobs();
+					}
+				},
+				1000 * 60 * _.random(0, 60),
+				client,
+				index,
+				type,
+				posts,
+			);
+		});
+	});
+};
+
+likeOrSubscribe(client, "dog", "subscribe");
+
+const destroyJobs = () => {
+	if (mapSchedule) {
+		mapSchedule.destroy();
+		mapSchedule = null;
+	}
+};
+
+module.exports.start = start;
