@@ -30,7 +30,7 @@
     "selenium-webdriver": "^3.6.0",
     "snoostorm": "^1.5.2",
     "snoowrap": "^1.21.0",
-    "telegraf": "^3.38.0"
+    "telegraf": "^3.38.0",
     "util": "^0.12.3",
     "util.promisify": "^1.1.1"
   },
