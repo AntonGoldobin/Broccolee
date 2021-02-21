@@ -17,38 +17,44 @@ const start = () => {
 	client.login().then(() => {
 		likeOrSubscribe(client, "dog", "subscribe");
 		likeOrSubscribe(client, "lol", "like");
+
+		// likeOrSubscribe(client, "hereistheoriginalhashtagbrocol", "subscribe");
+		// likeOrSubscribe(client, "hereistheoriginalhashtagbrocol", "like");
 	});
 };
+
+//hereisoroginalhashtagbroccole
 
 const likeOrSubscribe = (client, tag, type) => {
-	client.getMediaFeedByHashtag({ hashtag: tag }).then((data) => {
-		let index = 0;
-		const posts = data.edge_hashtag_to_top_posts.edges;
-		mapSchedule = cron.schedule("0 * * * *", () => {
-			_.delay(
-				() => {
-					if (index < posts.length) {
-						if (type === "like") {
-							client.like({ mediaId: posts[index].node.id });
-						} else if (type === "subscribe") {
-							client.follow({ mediaId: posts[index].node.owner.id });
+	client
+		.getMediaFeedByHashtag({ hashtag: tag })
+		.then((data) => {
+			let index = 0;
+			const posts = data.edge_hashtag_to_media.edges;
+			mapSchedule = cron.schedule("0 * * * *", () => {
+				_.delay(
+					() => {
+						if (index < posts.length) {
+							if (type === "like") {
+								client.like({ mediaId: posts[index].node.id });
+							} else if (type === "subscribe") {
+								client.follow({ userId: posts[index].node.owner.id });
+							}
+							index++;
+						} else {
+							destroyJobs();
 						}
-						index++;
-					} else {
-						destroyJobs();
-					}
-				},
-				1000 * 60 * _.random(0, 60),
-				client,
-				index,
-				type,
-				posts,
-			);
-		});
-	});
+					},
+					1000 * 60 * _.random(0, 60),
+					client,
+					index,
+					type,
+					posts,
+				);
+			});
+		})
+		.catch((err) => console.log(err));
 };
-
-likeOrSubscribe(client, "dog", "subscribe");
 
 const destroyJobs = () => {
 	if (mapSchedule) {

@@ -71,7 +71,7 @@ hentaiBot.startHentaiBot();
 sluttyStoriesBot.startSluttyStoriesBot();
 startSluttyStoriesRusBot.startSluttyStoriesRusBot();
 avocadoBot.startAvocadoBot();
-// instaSubscribes.start();
+instaSubscribes.start();
 // spamBotJane.getAndReplyComment();
 
 module.exports = app;

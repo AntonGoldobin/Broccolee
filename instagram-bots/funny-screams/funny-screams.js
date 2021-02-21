@@ -30,40 +30,22 @@ ig.state.generateDevice("funnyscreamstg");
 	// The same as preLoginFlow()
 	// Optionally wrap it to process.nextTick so we dont need to wait ending of this bunch of requests
 	process.nextTick(async () => await ig.simulate.postLoginFlow());
-	// Create UserFeed instance to get loggedInUser's posts
-	const userFeed = ig.feed.user(loggedInUser.pk);
-	const myPostsFirstPage = await userFeed.items();
-	// All the feeds are auto-paginated, so you just need to call .items() sequentially to get next page
-	const myPostsSecondPage = await userFeed.items();
 
 	// const imageBuffer = await get({
 	// 	url: readFileAsync("./telegram-bots/downloaded-files/test.mp4"), // random picture with 800x800 size
 	// 	encoding: "x264", // this is required, only this way a Buffer is returned
 	// });
 
-	console.log(userFeed);
-	ig.search.tags("ядианаиякрасоткапотоиучтопомогаюантону").then((posts) => {
-		console.log(posts[0]);
-		ig.media.like({
-			mediaId: posts[0].id,
-			moduleInfo: {
-				module_name: "feed_contextual_newsfeed_multi_media_liked",
-				user_id: loggedInUser.pk,
-				username: loggedInUser.username,
-			},
-			d: 0,
-		});
-
-		// console.log(posts[0].id);
-		// ig.media.info(posts[0].media_count);
+	// console.log(posts[0].id);
+	// ig.media.info(posts[0].media_count);
+	// });
+	var videoBuffer = await readFileAsync("./telegram-bots/downloaded-files/test.mp4");
+	const publishResult = await ig.publish.story({
+		video: videoBuffer,
+		coverImage: readFileAsync("./telegram-bots/downloaded-files/preview.jpg"),
 	});
 
-	// const publishResult = await ig.publish.story({
-	// 	video: readFileAsync("./telegram-bots/downloaded-files/test.mp4"),
-	// 	coverImage: "https://upload.wikimedia.org/wikipedia/commons/3/3f/JPEG_example_flower.jpg",
-	// });
-
-	// console.log(publishResult); // publishResult.status should be "ok"
+	console.log(publishResult); // publishResult.status should be "ok"
 
 	// await ig.publish.story({ file: imageBuffer, caption: "my caption" });
 
