@@ -2,8 +2,8 @@ const Telegraf = require("telegraf");
 const cron = require("node-cron");
 const { successfulConsoleLog, getCurrentTime, getChannelsDescriptions } = require("./utils");
 const gettingPosts = require("./gettingPosts");
-const { getPostsIds } = require("./../db/models/getPostsId");
-const { removeAllPostsIds } = require("./../db/models/removeAllPostIds");
+const { getPostsIds } = require("../../db/models/getPostsId");
+const { removeAllPostsIds } = require("../../db/models/removeAllPostIds");
 const _ = require("lodash");
 const { startChannelAds, adsScheduleStart, adsScheduleStop } = require("./channelsAds");
 const { sendPost } = require("./sendPost");
@@ -218,7 +218,7 @@ const postBase = (config) => {
 					// If this is the last item of posts array => start ALL again
 					postIndex++;
 				}
-				if (posts.length === 0 || postIndex + 1 === posts.length) {
+				if (posts.length === 0 || postIndex >= posts.length) {
 					destroyJobs();
 				}
 			},
