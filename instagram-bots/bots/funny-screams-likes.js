@@ -6,16 +6,19 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 let mapSchedule = null;
+let dailySchedule = null;
 
 const client = new Instagram({ username: process.env.IG_FS_USERNAME, password: process.env.IG_FS_PASSWORD });
 
-const dailySchedule = cron.schedule("0 7 * * *", () => {
-	start();
-});
-
 const start = () => {
+	dailySchedule = cron.schedule("0 7 * * *", () => {
+		startDailyWork();
+	});
+};
+
+const startDailyWork = () => {
 	client.login().then(() => {
-		likeOrSubscribe(client, "dog", "subscribe");
+		likeOrSubscribe(client, "rofl", "subscribe");
 		likeOrSubscribe(client, "lol", "like");
 
 		// likeOrSubscribe(client, "hereistheoriginalhashtagbrocol", "subscribe");

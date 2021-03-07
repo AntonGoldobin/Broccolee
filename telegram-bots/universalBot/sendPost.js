@@ -5,7 +5,7 @@ const path = require("path");
 const translate = require("@iamtraction/google-translate");
 const { default: axios } = require("axios");
 const _ = require("lodash");
-const { saveUniquePostsIds } = require("./../db/models/savePostId");
+const { saveUniquePostsIds } = require("../../db/models/savePostId");
 
 const sendPost = (post, config, ctx) => {
 	// Save url to DB for checking in future and ignoring to posting
@@ -124,8 +124,8 @@ const postAdultVideo = (post, ctx, text, channelId) => {
 							parse_mode: "Markdown",
 						},
 					);
-					removeFile(videoNames.filePath);
 				}
+				removeFile(videoNames.filePath);
 			});
 		})
 		.catch(console.log);

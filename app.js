@@ -15,7 +15,8 @@ const hentaiBot = require("./telegram-bots/bots/hentai-bot");
 const sluttyStoriesBot = require("./telegram-bots/bots/slutty-stories-bot");
 const startSluttyStoriesRusBot = require("./telegram-bots/bots/slutty-stories-rus-bot");
 const spamBotJane = require("./spam-bots/jane-doel");
-const instaSubscribes = require("./instagram-bots/funny-screams/funny-screams-likes");
+const instaSubscribes = require("./instagram-bots/bots/funny-screams-likes");
+const igFunnyScreams = require("./instagram-bots/bots/ig-funny-screams");
 
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
@@ -72,6 +73,8 @@ sluttyStoriesBot.startSluttyStoriesBot();
 startSluttyStoriesRusBot.startSluttyStoriesRusBot();
 avocadoBot.startAvocadoBot();
 instaSubscribes.start();
+igFunnyScreams.start();
+
 // spamBotJane.getAndReplyComment();
 
 module.exports = app;
