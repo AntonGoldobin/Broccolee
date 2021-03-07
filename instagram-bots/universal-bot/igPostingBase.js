@@ -117,6 +117,7 @@ const postBase = (config) => {
 	const sendPostsToChannel = (posts, ig, type) => {
 		if (posts.length == 0) return;
 		let postIndex = 0;
+		destroyJobs();
 
 		postingJob = cron.schedule(
 			postingJobConfig,

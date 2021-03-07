@@ -8,7 +8,7 @@ const config = {
 	igLogin: process.env.IG_FS_USERNAME,
 	igPassword: process.env.IG_FS_PASSWORD,
 	redditChannel: "perfectlycutscreams",
-	postingMin: "*/2 * * *",
+	postingMin: "0 */2 * * *",
 	postLimit: 10,
 	translate: false,
 	//For video channels
