@@ -8,7 +8,7 @@ const config = {
 	channelId: process.env.PORNHUB_TG_CHANNEL,
 	notificationChannelId: process.env.NOTIFICATION_CHANNEL,
 	botToken: process.env.PORNHUB_BOT_TOKEN,
-	postingMin: "58 * * * * *",
+	postingMin: "58 * * * *",
 	postLimit: 50,
 	//How many posts every postingMin
 	postsCount: 2,
