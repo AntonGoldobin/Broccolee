@@ -5,26 +5,37 @@ const dotenv = require("dotenv");
 
 dotenv.config();
 
-let mapSchedule = null;
 let dailySchedule = null;
+let mapSchedule = {};
 
 const client = new Instagram({ username: process.env.IG_FS_USERNAME, password: process.env.IG_FS_PASSWORD });
 
 const start = () => {
 	dailySchedule = cron.schedule("0 7 * * *", () => {
+		mapSchedule = {};
 		startDailyWork();
 	});
 };
 
 const startDailyWork = () => {
-	client.login().then(() => {
-		likeOrSubscribe(client, "rofl", "subscribe");
-		likeOrSubscribe(client, "lol", "like");
+	client
+		.login()
+		.then(() => {
+			likeOrSubscribe(client, "rofl", "subscribe");
+			likeOrSubscribe(client, "lol", "like");
 
-		// likeOrSubscribe(client, "hereistheoriginalhashtagbrocol", "subscribe");
-		// likeOrSubscribe(client, "hereistheoriginalhashtagbrocol", "like");
-	});
+			// likeOrSubscribe(client, "hereistheoriginalhashtagbrocol", "subscribe");
+			// likeOrSubscribe(client, "hereistheoriginalhashtagbrocol", "like");
+		})
+		.catch(async (err) => {
+			if (err.error && err.error.message === "checkpoint_required") {
+				const challengeUrl = err.error.checkpoint_url;
+				await client.updateChallenge({ challengeUrl, choice: 1 });
+			}
+		});
 };
+
+startDailyWork();
 
 //hereisoroginalhashtagbroccole
 
@@ -34,7 +45,7 @@ const likeOrSubscribe = (client, tag, type) => {
 		.then((data) => {
 			let index = 0;
 			const posts = data.edge_hashtag_to_media.edges;
-			mapSchedule = cron.schedule("0 * * * *", () => {
+			mapSchedule[type] = cron.schedule("*/30 * * * *", () => {
 				_.delay(
 					() => {
 						if (index < posts.length) {
@@ -45,10 +56,10 @@ const likeOrSubscribe = (client, tag, type) => {
 							}
 							index++;
 						} else {
-							destroyJobs();
+							destroyJobs(type);
 						}
 					},
-					1000 * 60 * _.random(0, 60),
+					1000 * 60 * _.random(0, 30),
 					client,
 					index,
 					type,
@@ -59,10 +70,10 @@ const likeOrSubscribe = (client, tag, type) => {
 		.catch((err) => console.log(err));
 };
 
-const destroyJobs = () => {
-	if (mapSchedule) {
-		mapSchedule.destroy();
-		mapSchedule = null;
+const destroyJobs = (type) => {
+	if (mapSchedule[type]) {
+		mapSchedule[type].destroy();
+		mapSchedule[type] = null;
 	}
 };
 

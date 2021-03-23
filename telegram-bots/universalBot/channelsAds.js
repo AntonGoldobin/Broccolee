@@ -6,8 +6,8 @@ const { postAdultVideo, postVideo } = require("./sendPost");
 
 // CHANNELS THAT WILL NOT BE ADDED TO ADS
 const exceptChannels = {
-	broccolee: "",
-	hentai: "",
+	// broccolee: "",
+	// hentai: "",
 };
 
 let postingJob = null;
