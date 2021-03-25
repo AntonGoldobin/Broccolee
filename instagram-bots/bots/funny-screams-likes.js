@@ -15,6 +15,8 @@ const start = () => {
 		mapSchedule = {};
 		startDailyWork();
 	});
+
+	startDailyWork();
 };
 
 const startDailyWork = () => {
@@ -35,11 +37,10 @@ const startDailyWork = () => {
 		});
 };
 
-startDailyWork();
-
 //hereisoroginalhashtagbroccole
 
 const likeOrSubscribe = (client, tag, type) => {
+	destroyJobs(type);
 	client
 		.getMediaFeedByHashtag({ hashtag: tag })
 		.then((data) => {
