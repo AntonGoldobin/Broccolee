@@ -62,7 +62,7 @@ const getTopList = (data) => {
 	});
 	const sortedTopList = topList.sort((a, b) => b.pp - a.pp);
 
-	let messageList = "";
+	let messageList = "ТОП ЛИСТ ПИДОРОВ \n\n";
 
 	for (let i = 0; i < 3; i++) {
 		const member = sortedTopList[i];
