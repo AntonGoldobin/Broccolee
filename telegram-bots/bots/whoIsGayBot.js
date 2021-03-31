@@ -50,7 +50,7 @@ const start = () => {
 };
 
 const getCurrentGay = (data) => {
-	const member = data.sortdata.sort((a, b) => b.createdAt - a.createdAt)[0][0];
+	const member = data.sort((a, b) => b.createdAt - a.createdAt)[0][0];
 	console.log(member);
 	return `ПИДОР ДНЯ - @${member.url} - ${data.filter((m) => member.url === m.url).length} points`;
 };
