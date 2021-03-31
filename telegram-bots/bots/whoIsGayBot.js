@@ -15,7 +15,7 @@ const members = [ "Codeavr", "dzerayeah", "furfury", "darrrouge", "dianastn", "N
 const start = () => {
 	const bot = new Telegraf(botToken, { username: "who_gay_bot" });
 
-	startDailyPosting = cron.schedule("0 23 * * *", () => {
+	startDailyPosting = cron.schedule("0 15 * * *", () => {
 		const chosenUser = getDailyGay();
 		const bestGayListMessage = `❤️❤️❤️❤️❤️❤️❤️❤️❤️ \n\n ПИДОР ДНЯ - @${chosenUser} \n \n❤️❤️❤️❤️❤️❤️❤️❤️❤️`;
 		bot.telegram.sendMessage(channelId, bestGayListMessage);
@@ -50,6 +50,7 @@ const start = () => {
 };
 
 const getCurrentGay = (data) => {
+	if (data.length == 0) return "";
 	const member = data.sort((a, b) => b.createdAt - a.createdAt)[0];
 	return `ПИДОР ДНЯ - @${member.url} - ${data.filter((m) => member.url === m.url).length} points`;
 };
