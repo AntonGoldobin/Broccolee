@@ -17,7 +17,7 @@ const start = () => {
 
 	startDailyPosting = cron.schedule("0 10 * * *", () => {
 		const chosenUser = getDailyGay();
-		const bestGayListMessage = `❤️❤️❤️❤️❤️❤️❤️❤️❤️ \n\n ПИДОР ДНЯ - @${chosenUser} \n \n❤️❤️❤️❤️❤️❤️❤️❤️❤️`;
+		const bestGayListMessage = `❤️❤️❤️❤️❤️❤️❤️❤️❤️ \n\n ${getRandomPhrase()} - @${chosenUser} \n \n❤️❤️❤️❤️❤️❤️❤️❤️❤️`;
 
 		bot.telegram.sendMessage(channelId, bestGayListMessage);
 
@@ -59,7 +59,7 @@ const start = () => {
 const getCurrentGay = (data) => {
 	if (data.length == 0) return "";
 	const member = data.sort((a, b) => b.createdAt - a.createdAt)[0];
-	return `${getRandomPhrase()} - @${member.url} - ${data.filter((m) => member.url === m.url).length} points`;
+	return `ПИДОР ДНЯ - @${member.url} - ${data.filter((m) => member.url === m.url).length} points`;
 };
 
 const getTopList = (data, count) => {
