@@ -15,9 +15,10 @@ const members = [ "Codeavr", "dzerayeah", "furfury", "darrrouge", "dianastn", "N
 const start = () => {
 	const bot = new Telegraf(botToken, { username: "who_gay_bot" });
 
-	startDailyPosting = cron.schedule("0 15 * * *", () => {
+	startDailyPosting = cron.schedule("0 10 * * *", () => {
 		const chosenUser = getDailyGay();
 		const bestGayListMessage = `❤️❤️❤️❤️❤️❤️❤️❤️❤️ \n\n ПИДОР ДНЯ - @${chosenUser} \n \n❤️❤️❤️❤️❤️❤️❤️❤️❤️`;
+
 		bot.telegram.sendMessage(channelId, bestGayListMessage);
 
 		const member = { url: chosenUser, created: Date.now() };
@@ -34,9 +35,15 @@ const start = () => {
 
 	// bot.on("message", async (ctx) => {});
 
-	bot.command("toplist", (ctx) => {
+	bot.command("top3", (ctx) => {
 		getPostsIds(botName)
-			.then((data) => ctx.telegram.sendMessage(ctx.update.message.chat.id, getTopList(data)))
+			.then((data) => ctx.telegram.sendMessage(ctx.update.message.chat.id, getTopList(data, 3)))
+			.catch((err) => console.log("who is gay mongo: " + err));
+	});
+
+	bot.command("top", (ctx) => {
+		getPostsIds(botName)
+			.then((data) => ctx.telegram.sendMessage(ctx.update.message.chat.id, getTopList(data, "all")))
 			.catch((err) => console.log("who is gay mongo: " + err));
 	});
 
@@ -52,10 +59,10 @@ const start = () => {
 const getCurrentGay = (data) => {
 	if (data.length == 0) return "";
 	const member = data.sort((a, b) => b.createdAt - a.createdAt)[0];
-	return `ПИДОР ДНЯ - @${member.url} - ${data.filter((m) => member.url === m.url).length} points`;
+	return `${getRandomPhrase()} - @${member.url} - ${data.filter((m) => member.url === m.url).length} points`;
 };
 
-const getTopList = (data) => {
+const getTopList = (data, count) => {
 	let topList = [];
 	members.forEach((member) => {
 		topList.push({ name: member, pp: data.filter((m) => member === m.url).length });
@@ -64,12 +71,31 @@ const getTopList = (data) => {
 
 	let messageList = "ТОП ЛИСТ ПИДОРОВ \n\n";
 
-	for (let i = 0; i < 3; i++) {
+	for (let i = 0; i < (count === "all" ? members.length : count); i++) {
 		const member = sortedTopList[i];
 		messageList += `${i === 0 ? "👑 " : "      "} ${i + 1} @${member.name}: ${member.pp} points \n\n`;
 	}
 
 	return messageList;
+};
+
+const getRandomPhrase = () => {
+	const phrases = [
+		"ПИДОР ДНЯ",
+		"Хоба! ПИДОР",
+		"Какое сейчас время? Время быть ПИДОРОМ",
+		"Сколько волка не корми, а смотрит, что ПИДОР",
+		"Семь раз отмерь, один раз ПИДОР",
+		"Любишь кататься, а всеравно ПИДОР",
+		"Встречают по одежке, а провожают, потому что ПИДОР",
+		"Одна голова хорошо, а лучше, когда ПИДОР",
+		"Кто с мечом к нам придет, тот ПИДОР",
+		"Сделал дело, стал ПИДОРОМ",
+		"Слово не воробей, а вот ПИДОР",
+		"Тише едешь, будешь ПИДОРОМ",
+		"Не рой другому яму, станешь ПИДОРОМ",
+	];
+	return _.sample(phrases);
 };
 
 const getDailyGay = () => {
