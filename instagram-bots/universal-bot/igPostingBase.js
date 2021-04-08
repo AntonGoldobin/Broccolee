@@ -1,5 +1,4 @@
 const cron = require("node-cron");
-const { successfulConsoleLog, getCurrentTime } = require("./utils");
 const { getPostsIds } = require("../../db/models/getPostsId");
 const { removeAllPostsIds } = require("../../db/models/removeAllPostIds");
 const _ = require("lodash");
@@ -58,15 +57,6 @@ const postBase = (config) => {
 	const startPosting = (ig, type) => {
 		destroyJobs();
 
-		// STOP POSTING AT NIGHT
-		const currentDate = new Date();
-		const currentTimeHours = currentDate.getHours();
-		if (currentTimeHours > 22 || currentTimeHours < 7) {
-			successfulConsoleLog("The schedule NOT started (this is night): " + getCurrentTime());
-			return;
-		}
-
-		successfulConsoleLog("INSTAGRAM The schedule will be started soon: " + getCurrentTime());
 		getRedditPosts(ig, type);
 	};
 

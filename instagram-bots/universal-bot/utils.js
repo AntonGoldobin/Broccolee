@@ -1,16 +1,5 @@
-const logger = require("node-color-log");
 const request = require("request");
 var fs = require("fs");
-
-// BEAUTIFUL LOGS
-
-const successfulConsoleLog = (text) => {
-	logger.bgColor("black").info(text);
-};
-
-const errorConsoleLog = (text) => {
-	logger.bgColor("black").error(text);
-};
 
 const getCurrentTime = () => {
 	var currentdate = new Date();
@@ -55,8 +44,6 @@ const getFileExtension = (str) => {
 	return str.slice(((str.lastIndexOf(".") - 1) >>> 0) + 2);
 };
 
-exports.successfulConsoleLog = successfulConsoleLog;
-exports.errorConsoleLog = errorConsoleLog;
 exports.getCurrentTime = getCurrentTime;
 exports.downloadFile = downloadFile;
 exports.getFileExtension = getFileExtension;

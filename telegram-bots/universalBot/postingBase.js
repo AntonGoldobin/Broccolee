@@ -1,6 +1,6 @@
 const Telegraf = require("telegraf");
 const cron = require("node-cron");
-const { successfulConsoleLog, getCurrentTime, getChannelsDescriptions } = require("./utils");
+const { getChannelsDescriptions } = require("./utils");
 const gettingPosts = require("./gettingPosts");
 const { getPostsIds } = require("../../db/models/getPostsId");
 const { removeAllPostsIds } = require("../../db/models/removeAllPostIds");
@@ -148,11 +148,9 @@ const postBase = (config) => {
 		const currentTimeHours = currentDate.getHours();
 		if (currentTimeHours > 22 || currentTimeHours < 7) {
 			ctx.telegram.sendMessage(config.notificationChannelId, "The schedule WAS NOT started (this is night) ");
-			successfulConsoleLog("The schedule NOT started (this is night): " + getCurrentTime());
 			return;
 		}
 
-		successfulConsoleLog("The schedule will be started soon: " + getCurrentTime());
 		getRedditPosts(ctx, type);
 	};
 
