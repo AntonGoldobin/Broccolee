@@ -5,17 +5,11 @@ const dotenv = require("dotenv");
 
 dotenv.config();
 
-let dailySchedule = null;
 let mapSchedule = {};
 
 const client = new Instagram({ username: process.env.IG_FS_USERNAME, password: process.env.IG_FS_PASSWORD });
 
 const start = () => {
-	dailySchedule = cron.schedule("0 7 * * *", () => {
-		mapSchedule = {};
-		startDailyWork();
-	});
-
 	startDailyWork();
 };
 
@@ -23,11 +17,8 @@ const startDailyWork = () => {
 	client
 		.login()
 		.then(() => {
-			likeOrSubscribe(client, "rofl", "subscribe");
+			likeOrSubscribe(client, "funny", "subscribe");
 			likeOrSubscribe(client, "lol", "like");
-
-			// likeOrSubscribe(client, "hereistheoriginalhashtagbrocol", "subscribe");
-			// likeOrSubscribe(client, "hereistheoriginalhashtagbrocol", "like");
 		})
 		.catch(async (err) => {
 			if (err.error && err.error.message === "checkpoint_required") {
@@ -37,16 +28,15 @@ const startDailyWork = () => {
 		});
 };
 
-//hereisoroginalhashtagbroccole
-
 const likeOrSubscribe = (client, tag, type) => {
+	const cronTime = type == "like" ? "*/2 * * * *" : "*/5 * * * *";
 	destroyJobs(type);
 	client
-		.getMediaFeedByHashtag({ hashtag: tag })
+		.getPhotosByHashtag({ hashtag: tag })
 		.then((data) => {
 			let index = 0;
-			const posts = data.edge_hashtag_to_media.edges;
-			mapSchedule[type] = cron.schedule("*/30 * * * *", () => {
+			const posts = data.hashtag.edge_hashtag_to_media.edges;
+			mapSchedule[type] = cron.schedule(cronTime, () => {
 				_.delay(
 					() => {
 						if (index < posts.length) {
@@ -58,6 +48,7 @@ const likeOrSubscribe = (client, tag, type) => {
 							index++;
 						} else {
 							destroyJobs(type);
+							startDailyWork();
 						}
 					},
 					1000 * 60 * _.random(0, 30),
