@@ -3,11 +3,12 @@ const cron = require("node-cron");
 const _ = require("lodash");
 const { saveUniquePostsIds } = require("../../db/models/savePostId");
 const { getPostsIds } = require("../../db/models/getPostsId");
+const dotenv = require("dotenv");
 
 let startDailyPosting = null;
 
 const botName = "who-is-gay";
-const botToken = "1646739103:AAHX1YS--WalviQ2r6i17oCtuhqHnlBf7Oc";
+const botToken = process.env.GAY_BOT_TOKEN;
 const channelId = "-461375734";
 
 const members = [ "Codeavr", "dzerayeah", "furfury", "darrrouge", "dianastn", "NemnogoDobra" ];
