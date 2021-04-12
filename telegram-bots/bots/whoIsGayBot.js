@@ -11,7 +11,7 @@ const botName = "who-is-gay";
 const botToken = process.env.GAY_BOT_TOKEN;
 const channelId = "-461375734";
 
-const members = [ "Codeavr", "dzerayeah", "furfury", "darrrouge", "dianastn", "NemnogoDobra", "@darydis" ];
+const members = [ "Codeavr", "dzerayeah", "furfury", "darrrouge", "dianastn", "NemnogoDobra", "darydis" ];
 
 const start = () => {
 	const bot = new Telegraf(botToken, { username: "who_gay_bot" });
