@@ -54,6 +54,13 @@ const start = () => {
 			.catch((err) => console.log("who is gay mongo: " + err));
 	});
 
+	bot.command("help", (ctx) => {
+		ctx.telegram.sendMessage(
+			ctx.update.message.chat.id,
+			`Не знаю как тебе помочь ${ctx.update.message.from.first_name}. О, могу пидором назвать, хочешь?`,
+		);
+	});
+
 	bot.launch();
 };
 
