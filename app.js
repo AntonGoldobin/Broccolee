@@ -73,10 +73,10 @@ hentaiBot.startHentaiBot();
 sluttyStoriesBot.startSluttyStoriesBot();
 startSluttyStoriesRusBot.startSluttyStoriesRusBot();
 avocadoBot.startAvocadoBot();
-instaSubscribes.start();
-igFunnyScreams.start();
 whoIsGay.start();
 
+// instaSubscribes.start();
+// igFunnyScreams.start();
 // spamBotJane.getAndReplyComment();
 
 module.exports = app;
