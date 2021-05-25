@@ -29,7 +29,7 @@ const startDailyWork = () => {
 };
 
 const likeOrSubscribe = (client, tag, type) => {
-	const cronTime = type == "like" ? "*/5 * * * *" : "*/10 * * * *";
+	const cronTime = type == "like" ? "*/10 * * * *" : "*/15 * * * *";
 	destroyJobs(type);
 	client
 		.getPhotosByHashtag({ hashtag: tag })
