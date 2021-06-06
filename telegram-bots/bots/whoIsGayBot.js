@@ -41,7 +41,7 @@ const start = () => {
 
 	bot.command("combo", (ctx) => {
 		const msg = ctx.update.message.text.replace("/combo", "")
-		const player = msg.trim() ? msg.trim() : ctx.update.message.chat.username
+		const player = msg.trim() ? msg.trim() : ctx.update.message.from.username
 		getPostsIds(botName)
 			.then((data) => ctx.telegram.sendMessage(ctx.update.message.chat.id, getMyCombo(data, player)))
 			.catch((err) => console.log("who is gay mongo: " + err))
