@@ -17,7 +17,6 @@ const startSluttyStoriesRusBot = require("./telegram-bots/bots/slutty-stories-ru
 const spamBotJane = require("./spam-bots/jane-doel");
 const instaSubscribes = require("./instagram-bots/bots/funny-screams-likes");
 const igFunnyScreams = require("./instagram-bots/bots/ig-funny-screams");
-const whoIsGay = require("./telegram-bots/bots/whoIsGayBot");
 
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
@@ -73,7 +72,6 @@ hentaiBot.startHentaiBot();
 sluttyStoriesBot.startSluttyStoriesBot();
 startSluttyStoriesRusBot.startSluttyStoriesRusBot();
 avocadoBot.startAvocadoBot();
-whoIsGay.start();
 
 // instaSubscribes.start();
 // igFunnyScreams.start();
