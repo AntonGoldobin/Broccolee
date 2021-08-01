@@ -26,7 +26,7 @@
     "node-cron": "^2.0.3",
     "nodemon": "^2.0.6",
     "pug": "2.0.0-beta11",
-    "redgifs": "^1.0.7",
+    "redgifs": "^1.0.8",
     "selenium-webdriver": "^3.6.0",
     "snoostorm": "^1.5.2",
     "snoowrap": "^1.21.0",
