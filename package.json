@@ -21,7 +21,7 @@
     "http-errors": "~1.6.3",
     "instagram-private-api": "^1.43.3",
     "instagram-web-api": "^2.2.2",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "mongoose": "^5.11.8",
     "morgan": "~1.9.1",
     "node-color-log": "^5.2.0",
