@@ -8,7 +8,6 @@ const _ = require('lodash')
 const { saveUniquePostsIds } = require('../../db/models/savePostId')
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path
 const ffmpeg = require('fluent-ffmpeg')
-var ffprobe = require('ffprobe-static')
 
 const sendPost = (post, config, ctx) => {
 	// Save url to DB for checking in future and ignoring to posting
@@ -104,7 +103,6 @@ const postVideo = (post, ctx, text, channelId) => {
 const getRedditVideoAndMerge = (videoId) => {
 	return new Promise((res, rej) => {
 		ffmpeg(`https://v.redd.it/${videoId}/DASH_720.mp4`)
-			.setFfprobePath(ffprobe.path)
 			.setFfmpegPath(ffmpegPath)
 			.videoCodec('libx264')
 			.addInput(`https://v.redd.it/${videoId}/DASH_audio.mp4`)
