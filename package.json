@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "@aleengo/doggyx": "^1.2.1",
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@heroku-cli/color": "^1.1.14",
     "@iamtraction/google-translate": "^1.1.2",
     "axios": "^0.21.1",
@@ -15,7 +16,10 @@
     "debug": "~2.6.9",
     "dotenv": "^8.2.0",
     "express": "~4.16.1",
+    "ffmpeg-installer": "^1.0.2",
+    "ffprobe-static": "^3.0.0",
     "file-url": "^3.0.0",
+    "fluent-ffmpeg": "^2.1.2",
     "http-errors": "~1.6.3",
     "instagram-private-api": "^1.43.3",
     "instagram-web-api": "^2.2.2",
